@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Reschevie</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/main.css">
+</head>
+<body>
+<div class="admin-layout">
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar-logo">
+      <a href="../index.html" class="logo"><span class="logo-r">R</span>eschevie</a>
+      <span>Admin Panel</span>
+    </div>
+    <nav class="admin-nav">
+      <a href="index.html" class="admin-nav-item active"><span class="admin-nav-icon">📊</span> Dashboard</a>
+      <a href="products.html" class="admin-nav-item"><span class="admin-nav-icon">💍</span> Products</a>
+      <a href="inquiries.html" class="admin-nav-item"><span class="admin-nav-icon">📩</span> Inquiries</a>
+      <a href="users.html" class="admin-nav-item"><span class="admin-nav-icon">👤</span> Users</a>
+      <a href="stories.html" class="admin-nav-item"><span class="admin-nav-icon">💬</span> Client Stories</a>
+      <a href="newsletters.html" class="admin-nav-item"><span class="admin-nav-icon">✉️</span> Newsletters</a>
+      <div style="height:1px; background:rgba(197,160,112,0.1); margin:16px 0;"></div>
+      <a href="../index.html" class="admin-nav-item"><span class="admin-nav-icon">🌐</span> View Site</a>
+      <a href="#" class="admin-nav-item" id="logout-btn"><span class="admin-nav-icon">🚪</span> Sign Out</a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="admin-main">
+    <div class="admin-header">
+      <h1>Dashboard</h1>
+      <div id="admin-greeting" style="font-size:13px; color:var(--gray-light);"></div>
+    </div>
+
+    <!-- Stats -->
+    <div class="admin-stats" id="admin-stats"></div>
+
+    <!-- Recent Inquiries -->
+    <div class="admin-table-wrap" style="margin-bottom:24px;">
+      <div class="admin-table-header">
+        <h3>Recent Inquiries</h3>
+        <a href="inquiries.html" class="btn-gold" style="font-size:11px; padding:8px 20px;">View All</a>
+      </div>
+      <table>
+        <thead><tr>
+          <th>Name</th><th>Email</th><th>Items</th><th>Submitted</th><th>Status</th>
+        </tr></thead>
+        <tbody id="recent-inquiries"></tbody>
+      </table>
+    </div>
+
+    <!-- Products Overview -->
+    <div class="admin-table-wrap">
+      <div class="admin-table-header">
+        <h3>Products Overview</h3>
+        <a href="products.html" class="btn-gold" style="font-size:11px; padding:8px 20px;">Manage</a>
+      </div>
+      <table>
+        <thead><tr>
+          <th>Name</th><th>Type</th><th>Origin</th><th>Price</th><th>Status</th>
+        </tr></thead>
+        <tbody id="products-table"></tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script src="../js/data.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Auth check
+  const session = getSession();
+  if (!session || session.role !== 'admin') {
+    window.location.href = '../login.html';
+    return;
+  }
+  document.getElementById('admin-greeting').textContent = `Welcome back, ${session.fname}`;
+  document.getElementById('logout-btn').addEventListener('click', (e) => {
+    e.preventDefault();
+    clearSession();
+    window.location.href = '../login.html';
+  });
+
+  const products = getProducts();
+  const users = getUsers().filter(u => u.role !== 'admin');
+  const inquiries = getInquiries();
+  const newsletters = getNewsletters();
+  const available = products.filter(p => p.status === 'available').length;
+
+  // Stats
+  document.getElementById('admin-stats').innerHTML = `
+    <div class="admin-stat-card"><span class="stat-num">${products.length}</span><span class="stat-label">Total Products</span></div>
+    <div class="admin-stat-card"><span class="stat-num">${available}</span><span class="stat-label">Available</span></div>
+    <div class="admin-stat-card"><span class="stat-num">${inquiries.length}</span><span class="stat-label">Inquiries</span></div>
+    <div class="admin-stat-card"><span class="stat-num">${users.length}</span><span class="stat-label">Registered Users</span></div>
+  `;
+
+  // Recent inquiries
+  const recent = inquiries.slice(-5).reverse();
+  document.getElementById('recent-inquiries').innerHTML = recent.length
+    ? recent.map(i => `<tr>
+        <td>${i.fname} ${i.lname}</td>
+        <td>${i.email}</td>
+        <td>${i.items?.length || 0} item(s)</td>
+        <td>${formatDate(i.submitted_at)}</td>
+        <td><span class="badge-status badge-pending">${i.status}</span></td>
+      </tr>`).join('')
+    : `<tr><td colspan="5" style="text-align:center;color:var(--gray-light);padding:32px;">No inquiries yet</td></tr>`;
+
+  // Products table
+  document.getElementById('products-table').innerHTML = products.slice(0,6).map(p => `
+    <tr>
+      <td>${p.emoji} ${p.name}</td>
+      <td style="text-transform:capitalize;">${p.type}</td>
+      <td>${p.origin}</td>
+      <td>${p.price}</td>
+      <td><span class="badge-status badge-${p.status}">${p.status}</span></td>
+    </tr>
+  `).join('');
+});
+</script>
+</body>
+</html>

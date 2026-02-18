@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inquiry List — Reschevie</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+<nav class="navbar scrolled">
+  <div class="nav-inner">
+    <a href="index.html" class="logo"><span class="logo-r">R</span>eschevie</a>
+    <ul class="nav-links">
+      <li><a href="catalog.html">Catalog</a></li>
+      <li><a href="index.html#about">Our Story</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="inquiry.html" class="nav-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/></svg>
+        <span class="badge" id="cart-badge">0</span>
+      </a>
+      <div id="auth-links"></div>
+    </div>
+  </div>
+</nav>
+
+<div class="page-header">
+  <span class="section-tag">Concierge Service</span>
+  <h1>Your Inquiry List</h1>
+  <p>Review your selected pieces. Our concierge team will prepare a personalized quote.</p>
+</div>
+
+<section style="padding:40px 48px 80px;">
+  <div class="inquiry-layout">
+    <!-- Items -->
+    <div>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <span id="item-count" style="font-size:13px; color:var(--gold);"></span>
+        <button class="btn-ghost" id="clear-all-btn" style="font-size:11px;">Clear All</button>
+      </div>
+      <div id="inquiry-items">
+        <!-- populated by JS -->
+      </div>
+      <div id="empty-inquiry" class="empty-state" style="display:none;">
+        <div class="empty-icon">🛍️</div>
+        <h3>Your inquiry list is empty</h3>
+        <p>Browse our catalog to discover exceptional pieces</p>
+        <a href="catalog.html" class="btn-gold" style="display:inline-block; margin-top:24px;">Browse Collection</a>
+      </div>
+      <a href="catalog.html" style="display:inline-flex; align-items:center; gap:8px; font-size:12px; color:var(--gold); margin-top:24px; letter-spacing:0.1em; text-transform:uppercase;">
+        ← Continue Browsing
+      </a>
+    </div>
+
+    <!-- Summary & Form -->
+    <div class="inquiry-sidebar">
+      <div class="inquiry-summary-card">
+        <h3>Inquiry Summary</h3>
+        <div class="inquiry-row"><span>Selected Items</span><strong id="summary-count">0 items</strong></div>
+        <div class="inquiry-row"><span>Estimated Total</span><strong>Request Quote</strong></div>
+        <div style="margin:16px 0; padding:12px 0; border-top:1px solid rgba(197,160,112,0.1); border-bottom:1px solid rgba(197,160,112,0.1);">
+          <div class="inquiry-badge"><span class="inquiry-badge-icon">✓</span> Authenticity Guaranteed</div>
+          <div class="inquiry-badge"><span class="inquiry-badge-icon">✓</span> Personal Concierge Service</div>
+          <div class="inquiry-badge"><span class="inquiry-badge-icon">✓</span> Secure & Confidential</div>
+        </div>
+
+        <div class="concierge-form" id="concierge-form-section">
+          <h4>Concierge Request</h4>
+          <p style="font-size:12px; color:var(--gray-light); margin-bottom:16px;">Please provide your details so our team can prepare your personalized quote.</p>
+
+          <div id="form-error" class="form-error" style="display:none; margin-bottom:12px;"></div>
+          <div id="form-success" class="form-success" style="display:none; margin-bottom:12px;"></div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">First Name</label>
+              <input type="text" id="c-fname" class="form-input" placeholder="First name">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Name</label>
+              <input type="text" id="c-lname" class="form-input" placeholder="Last name">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="c-email" class="form-input" placeholder="name@example.com">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Phone</label>
+              <input type="tel" id="c-phone" class="form-input" placeholder="+63 900 000 0000">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Preferred Contact</label>
+              <select id="c-contact-pref" class="form-input">
+                <option value="email">Email</option>
+                <option value="phone">Phone</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Special Requests</label>
+            <textarea id="c-notes" class="form-input" placeholder="Any specific customization requests, sizing details, or questions about the pieces?"></textarea>
+          </div>
+          <button class="btn-gold" style="width:100%;" id="submit-inquiry">Submit Inquiry</button>
+          <p style="font-size:10px; color:var(--gray); margin-top:10px; text-align:center;">By submitting, you agree to our Privacy Policy and Terms of Service.</p>
+        </div>
+
+        <div id="inquiry-submitted" style="display:none; text-align:center; padding:24px 0;">
+          <div style="font-size:48px; margin-bottom:16px;">✉️</div>
+          <h3 style="font-family:var(--font-serif); font-size:24px; font-weight:300; margin-bottom:8px;">Inquiry Submitted!</h3>
+          <p style="font-size:13px; color:var(--gray-light);">Our concierge team will contact you within 24 hours with your personalized quote.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer" style="margin-top:0; padding:40px 48px 20px;">
+  <div style="text-align:center; font-size:12px; color:var(--gray-light);">© 2026 Reschevie. Imus, Cavite, Philippines.</div>
+</footer>
+
+<script src="js/data.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const session = getSession();
+  const authDiv = document.getElementById('auth-links');
+  if (session) {
+    authDiv.innerHTML = `<span style="font-size:12px;color:var(--gold);padding:8px 12px;">Hello, ${session.fname}</span>
+    <button class="btn-ghost" onclick="clearSession();location.href='index.html'">Sign Out</button>`;
+    // Pre-fill form
+    document.getElementById('c-fname').value = session.fname || '';
+    document.getElementById('c-lname').value = session.lname || '';
+    document.getElementById('c-email').value = session.email || '';
+  } else {
+    authDiv.innerHTML = `<a href="login.html" class="btn-ghost">Sign In</a>`;
+  }
+
+  renderInquiryList();
+
+  document.getElementById('clear-all-btn').addEventListener('click', () => {
+    if (confirm('Clear all items from your inquiry list?')) {
+      saveCart([]);
+      renderInquiryList();
+    }
+  });
+
+  document.getElementById('submit-inquiry').addEventListener('click', submitInquiry);
+});
+
+function renderInquiryList() {
+  const cart = getCart();
+  const products = getProducts();
+  const items = cart.map(id => products.find(p => p.id === id)).filter(Boolean);
+
+  document.getElementById('cart-badge').textContent = cart.length;
+  document.getElementById('summary-count').textContent = `${items.length} item${items.length !== 1 ? 's' : ''}`;
+  document.getElementById('item-count').textContent = `${items.length} piece${items.length !== 1 ? 's' : ''} selected`;
+
+  const container = document.getElementById('inquiry-items');
+  const emptyEl = document.getElementById('empty-inquiry');
+
+  if (items.length === 0) {
+    container.innerHTML = '';
+    emptyEl.style.display = 'block';
+    document.getElementById('concierge-form-section').style.display = 'none';
+  } else {
+    emptyEl.style.display = 'none';
+    document.getElementById('concierge-form-section').style.display = 'block';
+    container.innerHTML = items.map(p => `
+      <div class="inquiry-item">
+        <div class="inquiry-item-img">${p.emoji}</div>
+        <div>
+          <div class="inquiry-item-type">${p.type} · ${p.origin}</div>
+          <div class="inquiry-item-name">${p.name}</div>
+          <div style="font-size:12px; color:var(--gray-light); margin-top:4px;">${p.materials}</div>
+          <div style="font-family:var(--font-serif); font-size:16px; color:var(--gold-light); margin-top:6px;">${p.price === 'POA' ? 'Price Upon Request' : p.price}</div>
+        </div>
+        <button class="inquiry-remove" onclick="removeItem(${p.id})" title="Remove">✕</button>
+      </div>
+    `).join('');
+  }
+}
+
+function removeItem(id) {
+  removeFromCart(id);
+  renderInquiryList();
+}
+
+function submitInquiry() {
+  const fname = document.getElementById('c-fname').value.trim();
+  const lname = document.getElementById('c-lname').value.trim();
+  const email = document.getElementById('c-email').value.trim();
+  const phone = document.getElementById('c-phone').value.trim();
+  const contactPref = document.getElementById('c-contact-pref').value;
+  const notes = document.getElementById('c-notes').value.trim();
+  const errEl = document.getElementById('form-error');
+  const succEl = document.getElementById('form-success');
+
+  errEl.style.display = 'none';
+  succEl.style.display = 'none';
+
+  const cart = getCart();
+  if (cart.length === 0) {
+    errEl.textContent = 'Please add items to your inquiry list first.';
+    errEl.style.display = 'block';
+    return;
+  }
+  if (!fname || !lname || !email) {
+    errEl.textContent = 'Please fill in your name and email.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const inquiries = getInquiries();
+  const newInquiry = {
+    id: Date.now(),
+    fname, lname, email, phone, contactPref, notes,
+    items: cart,
+    status: 'pending',
+    submitted_at: new Date().toISOString()
+  };
+  inquiries.push(newInquiry);
+  saveInquiries(inquiries);
+  saveCart([]);
+
+  document.getElementById('concierge-form-section').style.display = 'none';
+  document.getElementById('inquiry-submitted').style.display = 'block';
+  renderInquiryList();
+}
+</script>
+</body>
+</html>

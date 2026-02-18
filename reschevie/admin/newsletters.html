@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Newsletters — Reschevie Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/main.css">
+</head>
+<body>
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar-logo">
+      <a href="../index.html" class="logo"><span class="logo-r">R</span>eschevie</a>
+      <span>Admin Panel</span>
+    </div>
+    <nav class="admin-nav">
+      <a href="index.html" class="admin-nav-item"><span class="admin-nav-icon">📊</span> Dashboard</a>
+      <a href="products.html" class="admin-nav-item"><span class="admin-nav-icon">💍</span> Products</a>
+      <a href="inquiries.html" class="admin-nav-item"><span class="admin-nav-icon">📩</span> Inquiries</a>
+      <a href="users.html" class="admin-nav-item"><span class="admin-nav-icon">👤</span> Users</a>
+      <a href="stories.html" class="admin-nav-item"><span class="admin-nav-icon">💬</span> Client Stories</a>
+      <a href="newsletters.html" class="admin-nav-item active"><span class="admin-nav-icon">✉️</span> Newsletters</a>
+      <div style="height:1px; background:rgba(197,160,112,0.1); margin:16px 0;"></div>
+      <a href="../index.html" class="admin-nav-item"><span class="admin-nav-icon">🌐</span> View Site</a>
+      <a href="#" class="admin-nav-item" id="logout-btn"><span class="admin-nav-icon">🚪</span> Sign Out</a>
+    </nav>
+  </aside>
+  <main class="admin-main">
+    <div class="admin-header"><h1>Newsletter Subscribers</h1></div>
+    <div class="admin-table-wrap">
+      <div class="admin-table-header">
+        <h3>Subscribers <span id="nl-count" style="font-size:14px;color:var(--gray-light);font-family:var(--font-sans);"></span></h3>
+      </div>
+      <table>
+        <thead><tr><th>#</th><th>Email</th><th>Subscribed On</th><th>Actions</th></tr></thead>
+        <tbody id="nl-table"></tbody>
+      </table>
+    </div>
+  </main>
+</div>
+<script src="../js/data.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const session = getSession();
+  if (!session || session.role !== 'admin') { window.location.href = '../login.html'; return; }
+  document.getElementById('logout-btn').addEventListener('click', (e) => { e.preventDefault(); clearSession(); window.location.href = '../login.html'; });
+  renderTable();
+});
+function renderTable() {
+  const nl = getNewsletters();
+  document.getElementById('nl-count').textContent = `(${nl.length})`;
+  document.getElementById('nl-table').innerHTML = nl.length
+    ? nl.map((n, i) => `<tr>
+        <td style="color:var(--gold);">${i+1}</td>
+        <td><strong style="color:var(--white);">${n.email}</strong></td>
+        <td>${formatDate(n.subbed_at)}</td>
+        <td><button class="action-btn action-delete" onclick="deleteNL(${n.id})">Remove</button></td>
+      </tr>`).join('')
+    : `<tr><td colspan="4" style="text-align:center;color:var(--gray-light);padding:32px;">No subscribers yet</td></tr>`;
+}
+function deleteNL(id) {
+  if (!confirm('Remove this subscriber?')) return;
+  saveNewsletters(getNewsletters().filter(n => n.id !== id));
+  renderTable();
+  showToast('Subscriber removed.');
+}
+</script>
+</body>
+</html>

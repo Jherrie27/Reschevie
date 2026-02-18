@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE products SYSTEM "products.dtd">
+<products>
+  <product id="1">
+    <name>Serpent Bohème Necklace</name>
+    <type>necklace</type>
+    <origin>Italy</origin>
+    <karat>18K</karat>
+    <weight>12.4g</weight>
+    <materials>18K Yellow Gold, VS1 Diamond</materials>
+    <price>POA</price>
+    <description>Inspired by Renaissance-era serpent motifs, this sinuous necklace features a hand-engraved snake body set with pavé diamonds along its spine. Crafted in Arezzo, Italy.</description>
+    <status>available</status>
+    <featured>true</featured>
+  </product>
+  <product id="2">
+    <name>Diamond Pavé Ring</name>
+    <type>ring</type>
+    <origin>Saudi Arabia</origin>
+    <karat>22K</karat>
+    <weight>8.2g</weight>
+    <materials>22K Yellow Gold, VVS2 Diamonds</materials>
+    <price>85000</price>
+    <description>A bold statement ring set with 48 pavé diamonds in traditional Arabian filigree setting. Handcrafted by master goldsmiths in Riyadh.</description>
+    <status>available</status>
+    <featured>true</featured>
+  </product>
+  <product id="3">
+    <name>Wabi-Sabi Cuff</name>
+    <type>bracelet</type>
+    <origin>Japan</origin>
+    <karat>24K</karat>
+    <weight>22.1g</weight>
+    <materials>24K Pure Gold</materials>
+    <price>120000</price>
+    <description>An intentionally imperfect cuff that celebrates the Japanese philosophy of beauty in imperfection. Hand-hammered by a third-generation artisan in Kyoto.</description>
+    <status>available</status>
+    <featured>true</featured>
+  </product>
+  <product id="4">
+    <name>Dragon Phoenix Earrings</name>
+    <type>earring</type>
+    <origin>Hong Kong</origin>
+    <karat>18K</karat>
+    <weight>6.8g</weight>
+    <materials>18K Rose Gold, Ruby, Diamond</materials>
+    <price>148000</price>
+    <description>Dangle earrings featuring a stylized dragon and phoenix motif — symbols of eternal partnership. Crafted in the Tsim Sha Tsui jewelry district.</description>
+    <status>available</status>
+    <featured>true</featured>
+  </product>
+  <product id="5">
+    <name>Minimalist Bar Necklace</name>
+    <type>necklace</type>
+    <origin>Japan</origin>
+    <karat>18K</karat>
+    <weight>4.1g</weight>
+    <materials>18K Yellow Gold</materials>
+    <price>42000</price>
+    <description>Clean geometric lines meet Japanese precision. A brushed gold bar with mirror-polished edges, perfect for everyday luxury.</description>
+    <status>available</status>
+    <featured>false</featured>
+  </product>
+  <product id="6">
+    <name>Florentine Coin Pendant</name>
+    <type>necklace</type>
+    <origin>Italy</origin>
+    <karat>21K</karat>
+    <weight>9.3g</weight>
+    <materials>21K Yellow Gold</materials>
+    <price>68000</price>
+    <description>A hand-engraved coin pendant featuring the Florentine lily motif, an ancient symbol of refinement.</description>
+    <status>available</status>
+    <featured>false</featured>
+  </product>
+  <product id="7">
+    <name>Arabian Star Ring</name>
+    <type>ring</type>
+    <origin>Saudi Arabia</origin>
+    <karat>21K</karat>
+    <weight>7.6g</weight>
+    <materials>21K Gold, Sapphire</materials>
+    <price>76500</price>
+    <description>An eight-pointed star ring set with a deep blue sapphire at its heart. Inspired by traditional Arabian geometric art.</description>
+    <status>available</status>
+    <featured>false</featured>
+  </product>
+  <product id="8">
+    <name>Kanji Luck Pendant</name>
+    <type>necklace</type>
+    <origin>Japan</origin>
+    <karat>24K</karat>
+    <weight>5.2g</weight>
+    <materials>24K Pure Gold</materials>
+    <price>55000</price>
+    <description>The Kanji character for 'fortune' masterfully carved into pure 24K gold. A meaningful gift for milestone occasions.</description>
+    <status>sold</status>
+    <featured>false</featured>
+  </product>
+</products>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reschevie — Timeless Elegance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="index.html" class="logo">
+      <span class="logo-r">R</span>eschevie
+    </a>
+    <ul class="nav-links">
+      <li><a href="catalog.html">Catalog</a></li>
+      <li><a href="catalog.html#curations">Curations</a></li>
+      <li><a href="index.html#about">Our Story</a></li>
+      <li><a href="index.html#stories">Client Stories</a></li>
+    </ul>
+    <div class="nav-actions">
+      <a href="inquiry.html" class="nav-icon" title="Inquiry List">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+        <span class="badge" id="cart-badge">0</span>
+      </a>
+      <a href="login.html" class="btn-ghost">Sign In</a>
+      <a href="register.html" class="btn-gold">Join</a>
+    </div>
+    <button class="hamburger" id="hamburger">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="hero-grain"></div>
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+  </div>
+  <div class="hero-content">
+    <p class="hero-label">Est. 2024 · Global Curations</p>
+    <h1 class="hero-title">
+      Timeless<br>
+      <em>Elegance</em>
+    </h1>
+    <p class="hero-sub">Fine gold & diamond jewelry, meticulously crafted<br>by artisans from Japan, Italy, Saudi Arabia & Hong Kong</p>
+    <div class="hero-ctas">
+      <a href="catalog.html" class="btn-gold">Explore Collection</a>
+      <a href="index.html#curations" class="btn-outline">View Curations →</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- Curations Section -->
+<section class="curations" id="curations">
+  <div class="section-header">
+    <span class="section-tag">Global Heritage</span>
+    <h2 class="section-title">Our Curations</h2>
+    <p class="section-sub">Four distinct traditions. One unified vision of luxury.</p>
+  </div>
+  <div class="curations-grid">
+    <div class="curation-card" data-origin="Japan">
+      <div class="curation-img curation-japan">
+        <div class="curation-overlay"></div>
+        <div class="curation-content">
+          <span class="curation-tag">Japan</span>
+          <h3>Wabi-Sabi Gold</h3>
+          <p>Minimalist precision meets ancient forging traditions</p>
+          <a href="catalog.html?origin=Japan" class="curation-link">Explore →</a>
+        </div>
+      </div>
+    </div>
+    <div class="curation-card" data-origin="Italy">
+      <div class="curation-img curation-italy">
+        <div class="curation-overlay"></div>
+        <div class="curation-content">
+          <span class="curation-tag">Italy</span>
+          <h3>La Dolce Oro</h3>
+          <p>Renaissance-inspired craftsmanship, reborn in gold</p>
+          <a href="catalog.html?origin=Italy" class="curation-link">Explore →</a>
+        </div>
+      </div>
+    </div>
+    <div class="curation-card" data-origin="Saudi Arabia">
+      <div class="curation-img curation-saudi">
+        <div class="curation-overlay"></div>
+        <div class="curation-content">
+          <span class="curation-tag">Saudi Arabia</span>
+          <h3>Arabian Nights</h3>
+          <p>Ornate diamond-set pieces inspired by desert royalty</p>
+          <a href="catalog.html?origin=Saudi Arabia" class="curation-link">Explore →</a>
+        </div>
+      </div>
+    </div>
+    <div class="curation-card" data-origin="Hong Kong">
+      <div class="curation-img curation-hk">
+        <div class="curation-overlay"></div>
+        <div class="curation-content">
+          <span class="curation-tag">Hong Kong</span>
+          <h3>East Meets West</h3>
+          <p>Contemporary fusion of Eastern and Western aesthetics</p>
+          <a href="catalog.html?origin=Hong Kong" class="curation-link">Explore →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Products -->
+<section class="featured">
+  <div class="section-header">
+    <span class="section-tag">New Arrivals</span>
+    <h2 class="section-title">Featured Pieces</h2>
+  </div>
+  <div class="products-grid" id="featured-products">
+    <!-- Populated by JS -->
+  </div>
+  <div class="section-cta">
+    <a href="catalog.html" class="btn-gold">View Full Collection</a>
+  </div>
+</section>
+
+<!-- About -->
+<section class="about" id="about">
+  <div class="about-grid">
+    <div class="about-visual">
+      <div class="about-ring about-ring-1"></div>
+      <div class="about-ring about-ring-2"></div>
+      <div class="about-badge">
+        <span class="about-badge-num">4</span>
+        <span class="about-badge-text">Countries<br>of Origin</span>
+      </div>
+    </div>
+    <div class="about-text">
+      <span class="section-tag">Our Story</span>
+      <h2 class="section-title">Crafted with Intent,<br>Worn with <em>Purpose</em></h2>
+      <p>Reschevie was born from a singular belief: that exceptional jewelry should tell a story that transcends borders. By forging partnerships with master craftsmen across four continents, we offer pieces that carry centuries of heritage within their elegant forms.</p>
+      <p>Each piece in our collection undergoes rigorous quality assessment, ensuring that every gram of gold and every diamond set meets our exacting standards of beauty, authenticity, and enduring value.</p>
+      <div class="about-stats">
+        <div class="stat"><span class="stat-num">18K+</span><span class="stat-label">Gold Standard</span></div>
+        <div class="stat"><span class="stat-num">100%</span><span class="stat-label">Authenticated</span></div>
+        <div class="stat"><span class="stat-num">4</span><span class="stat-label">Global Origins</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Client Stories -->
+<section class="stories" id="stories">
+  <div class="section-header">
+    <span class="section-tag">Testimonials</span>
+    <h2 class="section-title">Client Stories</h2>
+  </div>
+  <div class="stories-grid" id="stories-grid">
+    <!-- Populated by JS -->
+  </div>
+</section>
+
+<!-- Newsletter -->
+<section class="newsletter">
+  <div class="newsletter-inner">
+    <h2>Join the Inner Circle</h2>
+    <p>Be the first to discover new curations, exclusive offers, and behind-the-scenes stories from our artisans.</p>
+    <form class="newsletter-form" id="newsletter-form">
+      <input type="email" placeholder="Your email address" required>
+      <button type="submit" class="btn-gold">Subscribe</button>
+    </form>
+    <p class="newsletter-note" id="newsletter-msg"></p>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a href="index.html" class="logo"><span class="logo-r">R</span>eschevie</a>
+      <p>Luxury jewelry curated from the world's finest artisan traditions.</p>
+    </div>
+    <div class="footer-links">
+      <h4>Collections</h4>
+      <ul>
+        <li><a href="catalog.html?type=ring">Rings</a></li>
+        <li><a href="catalog.html?type=necklace">Necklaces</a></li>
+        <li><a href="catalog.html?type=earring">Earrings</a></li>
+        <li><a href="catalog.html?type=bracelet">Bracelets</a></li>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="index.html#about">Our Story</a></li>
+        <li><a href="index.html#stories">Client Stories</a></li>
+        <li><a href="inquiry.html">Inquiries</a></li>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h4>Account</h4>
+      <ul>
+        <li><a href="login.html">Sign In</a></li>
+        <li><a href="register.html">Create Account</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 Reschevie. All rights reserved. Imus, Cavite, Philippines.</p>
+  </div>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

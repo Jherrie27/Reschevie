@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In — Reschevie</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    .login-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: radial-gradient(ellipse at 50% 50%, rgba(197,160,112,0.06) 0%, transparent 70%);
+    }
+    .login-wrap { width: 100%; max-width: 440px; }
+    .login-logo { text-align: center; margin-bottom: 40px; }
+    .login-logo a { font-family: var(--font-serif); font-size: 36px; font-weight: 300; }
+    .login-logo span { display: block; font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-top: 4px; }
+    .form-container { width: 100%; }
+  </style>
+</head>
+<body>
+<div class="login-page">
+  <div class="login-wrap">
+    <div class="login-logo">
+      <a href="index.html"><span class="logo-r">R</span>eschevie</a>
+      <span>Member Access</span>
+    </div>
+    <div class="form-container">
+      <div class="form-title">Welcome Back</div>
+      <div class="form-sub">Please sign in to your account</div>
+
+      <div id="login-error" class="form-error" style="display:none; margin-bottom:16px;"></div>
+
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" id="login-email" class="form-input" placeholder="name@example.com" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" id="login-password" class="form-input" placeholder="••••••••" autocomplete="current-password">
+      </div>
+
+      <button class="btn-gold" style="width:100%; margin-top:8px;" id="login-btn">Sign In</button>
+
+      <div class="form-footer" style="margin-top:20px;">
+        Don't have an account? <a href="register.html">Create Account</a>
+      </div>
+      <div class="form-footer" style="margin-top: 8px;">
+        <a href="index.html" style="color:var(--gray-light)">← Back to Home</a>
+      </div>
+
+      <div class="form-divider" style="margin-top:24px;">Demo Credentials</div>
+      <div style="font-size:11px; color:var(--gray-light); text-align:center; line-height:1.8;">
+        Admin: admin@reschevie.com / Admin@2026<br>
+        Register as a new user to test user features
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script>
+document.getElementById('login-btn').addEventListener('click', () => {
+  const email = document.getElementById('login-email').value.trim();
+  const pass = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+
+  if (!email || !pass) {
+    errEl.textContent = 'Please fill in all fields.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const users = getUsers();
+  const user = users.find(u => u.email === email && u.password === pass);
+
+  if (!user) {
+    errEl.textContent = 'Invalid email or password.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  errEl.style.display = 'none';
+  setSession({ id: user.id, email: user.email, fname: user.fname, lname: user.lname, role: user.role });
+
+  if (user.role === 'admin') {
+    window.location.href = 'admin/index.html';
+  } else {
+    window.location.href = 'index.html';
+  }
+});
+
+document.querySelectorAll('.form-input').forEach(i => {
+  i.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('login-btn').click();
+  });
+});
+
+// Redirect if already logged in
+const s = getSession();
+if (s) {
+  window.location.href = s.role === 'admin' ? 'admin/index.html' : 'index.html';
+}
+</script>
+</body>
+</html>

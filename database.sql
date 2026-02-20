@@ -39,7 +39,7 @@ CREATE TABLE admins (
 
 -- Insert default admin (password: Admin@2026 — hash this in production!)
 INSERT INTO admins (admin_email, admin_password, admin_fname, admin_lname)
-VALUES ('admin@reschevie.com', '$2y$10$CHANGETHISHASH', 'Samantha', 'Sayaman');
+VALUES ('admin@reschevie.com', 'reschevieAdmin2026&!', 'Samantha', 'Sayaman');
 
 -- ============================================================
 -- TABLE: products

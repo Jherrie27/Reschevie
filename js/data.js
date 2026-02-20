@@ -177,8 +177,13 @@ function dbSet(key, val) {
   } catch(e) {}
 }
 
-function getProducts() { return dbGet('products'); }
-function saveProducts(p) { dbSet('products', p); }
+async function getProducts() {
+  const res = await fetch('api/products.php');
+  return await res.json();
+}
+function saveProducts(p) {
+  dbSet('products', p);
+}
 function getStories() { return dbGet('stories'); }
 function saveStories(s) { dbSet('stories', s); }
 function getUsers() { return dbGet('users'); }

@@ -1,4 +1,9 @@
 ﻿<?php
+ob_start();
+session_start();
+include 'db_connect.php';
+header('Content-Type: application/json');
+
 // ============================================================
 // api/inquiries.php — Submit & manage inquiries
 // POST   — submit a new inquiry (public/authenticated)
@@ -177,6 +182,7 @@ if ($method === 'GET') {
     }
 
     $stmt->close();
+    ob_clean();
     echo json_encode($inquiries);
     exit;
 }

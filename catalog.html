@@ -104,11 +104,11 @@ document.addEventListener('DOMContentLoaded', () => {
   if (params.get('origin')) filterOrigin = params.get('origin');
   if (params.get('type')) filterType = params.get('type');
 
-  function renderCatalog() {
-    let products = getProducts();
-    if (filterType !== 'all') products = products.filter(p => p.type === filterType);
-    if (filterOrigin !== 'all') products = products.filter(p => p.origin === filterOrigin);
-    if (filterStatus !== 'all') products = products.filter(p => p.status === filterStatus);
+  async function renderCatalog() {
+    let products = await getProducts();
+    if (filterType !== 'all') products = products.filter(p => (p.product_type ?? p.type) === filterType);
+    if (filterOrigin !== 'all') products = products.filter(p => (p.product_origin ?? p.origin) === filterOrigin);
+    if (filterStatus !== 'all') products = products.filter(p => (p.product_status ?? p.status) === filterStatus);
 
     const grid = document.getElementById('catalog-grid');
     const noRes = document.getElementById('no-results');

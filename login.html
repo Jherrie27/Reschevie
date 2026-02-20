@@ -20,6 +20,7 @@
     .login-logo a { font-family: var(--font-serif); font-size: 36px; font-weight: 300; }
     .login-logo span { display: block; font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-top: 4px; }
     .form-container { width: 100%; }
+    .btn-gold:disabled { opacity: 0.6; cursor: not-allowed; }
   </style>
 </head>
 <body>
@@ -55,7 +56,7 @@
 
       <div class="form-divider" style="margin-top:24px;">Demo Credentials</div>
       <div style="font-size:11px; color:var(--gray-light); text-align:center; line-height:1.8;">
-        Admin: admin@reschevie.com / reschevieAdmin2026&!<br>
+        Admin: admin@reschevie.com / reschevieAdmin2026&amp;!<br>
         Register as a new user to test user features
       </div>
     </div>
@@ -64,47 +65,59 @@
 
 <script src="js/data.js"></script>
 <script>
-document.getElementById('login-btn').addEventListener('click', () => {
-  const email = document.getElementById('login-email').value.trim();
-  const pass = document.getElementById('login-password').value;
-  const errEl = document.getElementById('login-error');
-
-  if (!email || !pass) {
-    errEl.textContent = 'Please fill in all fields.';
-    errEl.style.display = 'block';
-    return;
+  // Redirect immediately if already logged in
+  const existingSession = getSession();
+  if (existingSession) {
+    window.location.href = existingSession.role === 'admin' ? 'admin/index.html' : 'index.html';
   }
 
-  const users = getUsers();
-  const user = users.find(u => u.email === email && u.password === pass);
+  async function handleLogin() {
+    const email  = document.getElementById('login-email').value.trim();
+    const pass   = document.getElementById('login-password').value;
+    const errEl  = document.getElementById('login-error');
+    const btn    = document.getElementById('login-btn');
 
-  if (!user) {
-    errEl.textContent = 'Invalid email or password.';
-    errEl.style.display = 'block';
-    return;
+    // Clear previous error
+    errEl.style.display = 'none';
+    errEl.textContent = '';
+
+    if (!email || !pass) {
+      errEl.textContent = 'Please fill in all fields.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    // Disable button to prevent double-submit
+    btn.disabled = true;
+    btn.textContent = 'Signing in…';
+
+    try {
+      const result = await login(email, pass);
+
+      if (result.success) {
+        // Session is set inside login() in data.js
+        window.location.href = result.role === 'admin' ? 'admin/index.html' : 'index.html';
+      } else {
+        errEl.textContent = result.message || 'Invalid email or password.';
+        errEl.style.display = 'block';
+      }
+    } catch (e) {
+      errEl.textContent = 'Something went wrong. Please try again.';
+      errEl.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    }
   }
 
-  errEl.style.display = 'none';
-  setSession({ id: user.id, email: user.email, fname: user.fname, lname: user.lname, role: user.role });
+  document.getElementById('login-btn').addEventListener('click', handleLogin);
 
-  if (user.role === 'admin') {
-    window.location.href = 'admin/index.html';
-  } else {
-    window.location.href = 'index.html';
-  }
-});
-
-document.querySelectorAll('.form-input').forEach(i => {
-  i.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') document.getElementById('login-btn').click();
+  // Allow Enter key to submit
+  document.querySelectorAll('.form-input').forEach(input => {
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleLogin();
+    });
   });
-});
-
-// Redirect if already logged in
-const s = getSession();
-if (s) {
-  window.location.href = s.role === 'admin' ? 'admin/index.html' : 'index.html';
-}
 </script>
 </body>
 </html>

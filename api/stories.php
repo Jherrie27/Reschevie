@@ -1,4 +1,9 @@
 ﻿<?php
+ob_start();
+session_start();
+include 'db_connect.php';
+header('Content-Type: application/json');
+
 // ============================================================
 // api/stories.php — Client stories / testimonials
 // GET    — fetch all stories (public)
@@ -41,6 +46,7 @@ if ($method === 'GET') {
     }
 
     $stmt->close();
+    ob_clean();
     echo json_encode($stories);
     exit;
 }

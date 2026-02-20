@@ -1,4 +1,8 @@
 ﻿<?php
+ob_start();
+session_start();
+include 'db_connect.php';
+header('Content-Type: application/json');
 // ============================================================
 // api/products.php — CRUD for products
 // ============================================================
@@ -75,6 +79,7 @@ if ($method === 'GET') {
     }
 
     $stmt->close();
+    ob_clean();
     echo json_encode($products);
     exit;
 }

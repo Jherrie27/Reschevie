@@ -1,4 +1,9 @@
 ﻿<?php
+ob_start();
+session_start();
+include 'db_connect.php';
+header('Content-Type: application/json');
+
 // ============================================================
 // api/newsletters.php — Newsletter subscriptions
 //
@@ -148,6 +153,7 @@ if ($method === 'GET') {
     }
 
     $stmt->close();
+    ob_clean();
     echo json_encode($subscribers);
     exit;
 }

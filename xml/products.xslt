@@ -30,7 +30,7 @@
 
 <xsl:template match="product">
   <div class="product">
-    <div class="product-name"><xsl:value-of select="n"/></div>
+    <div class="product-name"><xsl:value-of select="name"/></div>
     <div class="product-detail"><strong>Type:</strong> <xsl:value-of select="type"/></div>
     <div class="product-detail"><strong>Origin:</strong> <xsl:value-of select="origin"/></div>
     <div class="product-detail"><strong>Karat:</strong> <xsl:value-of select="karat"/></div>

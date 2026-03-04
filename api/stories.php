@@ -1,9 +1,4 @@
-﻿<?php
-ob_start();
-session_start();
-include 'db_connect.php';
-header('Content-Type: application/json');
-
+<?php
 // ============================================================
 // api/stories.php — Client stories / testimonials
 // GET    — fetch all stories (public)
@@ -12,6 +7,7 @@ header('Content-Type: application/json');
 // DELETE — delete a story (admin only)
 // ============================================================
 
+ob_start();
 session_start();
 include 'db_connect.php';
 

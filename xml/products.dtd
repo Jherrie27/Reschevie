@@ -1,7 +1,7 @@
 <!ELEMENT products (product+)>
-<!ELEMENT product (n, type, origin, karat, weight, materials, price, description, status, featured)>
+<!ELEMENT product (name, type, origin, karat, weight, materials, price, description, status, featured)>
 <!ATTLIST product id CDATA #REQUIRED>
-<!ELEMENT n (#PCDATA)>
+<!ELEMENT name (#PCDATA)>
 <!ELEMENT type (#PCDATA)>
 <!ELEMENT origin (#PCDATA)>
 <!ELEMENT karat (#PCDATA)>

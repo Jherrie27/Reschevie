@@ -147,13 +147,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  document.getElementById('submit-inquiry').addEventListener('click', submitInquiry);
+  document.getElementById('submit-inquiry').addEventListener('click', handleSubmitInquiry);
 });
 
-function renderInquiryList() {
+async function renderInquiryList() {
   const cart = getCart();
-  const products = getProducts();
-  const items = cart.map(id => products.find(p => p.id === id)).filter(Boolean);
+  const allProducts = await getProducts();
+  const items = cart.map(id => allProducts.find(p => (p.product_id ?? p.id) === id)).filter(Boolean);
 
   document.getElementById('cart-badge').textContent = cart.length;
   document.getElementById('summary-count').textContent = `${items.length} item${items.length !== 1 ? 's' : ''}`;
@@ -171,14 +171,14 @@ function renderInquiryList() {
     document.getElementById('concierge-form-section').style.display = 'block';
     container.innerHTML = items.map(p => `
       <div class="inquiry-item">
-        <div class="inquiry-item-img">${p.emoji}</div>
+        <div class="inquiry-item-img">${p.product_emoji ?? p.emoji}</div>
         <div>
-          <div class="inquiry-item-type">${p.type} · ${p.origin}</div>
-          <div class="inquiry-item-name">${p.name}</div>
-          <div style="font-size:12px; color:var(--gray-light); margin-top:4px;">${p.materials}</div>
-          <div style="font-family:var(--font-serif); font-size:16px; color:var(--gold-light); margin-top:6px;">${p.price === 'POA' ? 'Price Upon Request' : p.price}</div>
+          <div class="inquiry-item-type">${p.product_type ?? p.type} · ${p.product_origin ?? p.origin}</div>
+          <div class="inquiry-item-name">${p.product_name ?? p.name}</div>
+          <div style="font-size:12px; color:var(--gray-light); margin-top:4px;">${p.product_materials ?? p.materials}</div>
+          <div style="font-family:var(--font-serif); font-size:16px; color:var(--gold-light); margin-top:6px;">${(p.product_price_poa ?? 0) ? 'Price Upon Request' : (p.product_price ?? p.price)}</div>
         </div>
-        <button class="inquiry-remove" onclick="removeItem(${p.id})" title="Remove">✕</button>
+        <button class="inquiry-remove" onclick="removeItem(${p.product_id ?? p.id})" title="Remove">✕</button>
       </div>
     `).join('');
   }
@@ -189,7 +189,7 @@ function removeItem(id) {
   renderInquiryList();
 }
 
-function submitInquiry() {
+async function handleSubmitInquiry() {
   const fname = document.getElementById('c-fname').value.trim();
   const lname = document.getElementById('c-lname').value.trim();
   const email = document.getElementById('c-email').value.trim();
@@ -214,21 +214,24 @@ function submitInquiry() {
     return;
   }
 
-  const inquiries = getInquiries();
-  const newInquiry = {
-    id: Date.now(),
-    fname, lname, email, phone, contactPref, notes,
-    items: cart,
-    status: 'pending',
-    submitted_at: new Date().toISOString()
-  };
-  inquiries.push(newInquiry);
-  saveInquiries(inquiries);
-  saveCart([]);
+  const btn = document.getElementById('submit-inquiry');
+  btn.disabled = true;
+  btn.textContent = 'Submitting...';
 
-  document.getElementById('concierge-form-section').style.display = 'none';
-  document.getElementById('inquiry-submitted').style.display = 'block';
-  renderInquiryList();
+  const result = await submitInquiry({ fname, lname, email, phone, contactPref, notes, items: cart });
+
+  btn.disabled = false;
+  btn.textContent = 'Submit Inquiry';
+
+  if (result && result.success) {
+    clearCart();
+    document.getElementById('concierge-form-section').style.display = 'none';
+    document.getElementById('inquiry-submitted').style.display = 'block';
+    renderInquiryList();
+  } else {
+    errEl.textContent = result?.message || 'Failed to submit inquiry. Please try again.';
+    errEl.style.display = 'block';
+  }
 }
 </script>
 </body>

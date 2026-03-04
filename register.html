@@ -83,7 +83,7 @@
 
 <script src="js/data.js"></script>
 <script>
-document.getElementById('reg-btn').addEventListener('click', () => {
+document.getElementById('reg-btn').addEventListener('click', async () => {
   const fname = document.getElementById('reg-fname').value.trim();
   const lname = document.getElementById('reg-lname').value.trim();
   const username = document.getElementById('reg-username').value.trim();
@@ -118,31 +118,23 @@ document.getElementById('reg-btn').addEventListener('click', () => {
     return;
   }
 
-  const users = getUsers();
-  if (users.find(u => u.email === email)) {
-    errEl.textContent = 'An account with this email already exists.';
-    errEl.style.display = 'block';
-    return;
-  }
-  if (users.find(u => u.username === username)) {
-    errEl.textContent = 'Username is already taken.';
-    errEl.style.display = 'block';
-    return;
-  }
+  const btn = document.getElementById('reg-btn');
+  btn.disabled = true;
+  btn.textContent = 'Creating Account...';
 
-  const newUser = {
-    id: Date.now(),
-    username, email, password, fname, lname,
-    contact: phone,
-    role: 'user',
-    created_at: new Date().toISOString()
-  };
-  users.push(newUser);
-  saveUsers(users);
+  const result = await register({ username, email, password, fname, lname, contact: phone });
 
-  succEl.textContent = 'Account created successfully! Redirecting to sign in...';
-  succEl.style.display = 'block';
-  setTimeout(() => window.location.href = 'login.html', 1800);
+  btn.disabled = false;
+  btn.textContent = 'Create Account';
+
+  if (result && result.success) {
+    succEl.textContent = 'Account created successfully! Redirecting to sign in...';
+    succEl.style.display = 'block';
+    setTimeout(() => window.location.href = 'login.html', 1800);
+  } else {
+    errEl.textContent = result?.message || 'Registration failed. Please try again.';
+    errEl.style.display = 'block';
+  }
 });
 </script>
 </body>

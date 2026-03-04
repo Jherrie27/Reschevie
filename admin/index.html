@@ -71,7 +71,7 @@
 
 <script src="../js/data.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   // Auth check
   const session = getSession();
   if (!session || session.role !== 'admin') {
@@ -85,11 +85,11 @@ document.addEventListener('DOMContentLoaded', () => {
     window.location.href = '../login.html';
   });
 
-  const products = getProducts();
-  const users = getUsers().filter(u => u.role !== 'admin');
-  const inquiries = getInquiries();
-  const newsletters = getNewsletters();
-  const available = products.filter(p => p.status === 'available').length;
+  const products   = await getProducts();
+  const users      = (await getUsers()).filter(u => u.role !== 'admin');
+  const inquiries  = await getInquiries();
+  const newsletters = await getNewsletters();
+  const available  = products.filter(p => (p.product_status ?? p.status) === 'available').length;
 
   // Stats
   document.getElementById('admin-stats').innerHTML = `
@@ -114,11 +114,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Products table
   document.getElementById('products-table').innerHTML = products.slice(0,6).map(p => `
     <tr>
-      <td>${p.emoji} ${p.name}</td>
-      <td style="text-transform:capitalize;">${p.type}</td>
-      <td>${p.origin}</td>
-      <td>${p.price}</td>
-      <td><span class="badge-status badge-${p.status}">${p.status}</span></td>
+      <td>${p.product_emoji ?? p.emoji} ${p.product_name ?? p.name}</td>
+      <td style="text-transform:capitalize;">${p.product_type ?? p.type}</td>
+      <td>${p.product_origin ?? p.origin}</td>
+      <td>${(p.product_price_poa ?? 0) ? 'POA' : (p.product_price ?? p.price)}</td>
+      <td><span class="badge-status badge-${p.product_status ?? p.status}">${p.product_status ?? p.status}</span></td>
     </tr>
   `).join('');
 });

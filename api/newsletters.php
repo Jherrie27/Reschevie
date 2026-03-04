@@ -1,9 +1,4 @@
-﻿<?php
-ob_start();
-session_start();
-include 'db_connect.php';
-header('Content-Type: application/json');
-
+<?php
 // ============================================================
 // api/newsletters.php — Newsletter subscriptions
 //
@@ -18,6 +13,7 @@ header('Content-Type: application/json');
 // DELETE — unsubscribe an email (own account or admin)
 // ============================================================
 
+ob_start();
 session_start();
 include 'db_connect.php';
 

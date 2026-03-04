@@ -1,9 +1,4 @@
-﻿<?php
-ob_start();
-session_start();
-include 'db_connect.php';
-header('Content-Type: application/json');
-
+<?php
 // ============================================================
 // api/inquiries.php — Submit & manage inquiries
 // POST   — submit a new inquiry (public/authenticated)
@@ -12,6 +7,7 @@ header('Content-Type: application/json');
 // DELETE — delete an inquiry (admin only)
 // ============================================================
 
+ob_start();
 session_start();
 include 'db_connect.php';
 

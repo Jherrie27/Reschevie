@@ -1,137 +1,125 @@
-# Reschevie Website
-## Setup Guide for ITS122L — Web Systems and Technologies 2
+# Reschevie — Luxury Jewelry E-Commerce Website
+
+**ITS122L — Web Systems and Technologies 2 | Group 5 | Mapúa University**
+
+Reschevie is a full-stack luxury jewelry e-commerce website that allows customers to browse exclusive jewelry pieces, submit personalized inquiries, and manage wishlists, while providing admins with a complete CRUD dashboard.
 
 ---
 
-## 📁 Project Structure
+## 👥 Group Info
+
+- **Course:** ITS122L — Web Systems and Technologies 2
+- **Group:** Group 5
+- **School:** Mapúa University
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer      | Technology                        |
+|------------|-----------------------------------|
+| Frontend   | HTML5, CSS3, JavaScript (ES6+)    |
+| Backend    | PHP 8+                            |
+| Database   | MySQL 8+                          |
+| Data Layer | XML, DTD, XSLT                    |
+| Server     | Apache (XAMPP/WAMP)               |
+
+---
+
+## 📁 File Structure
 
 ```
 reschevie/
-├── index.html          ← Homepage
-├── catalog.html        ← Product catalog with filters
-├── login.html          ← User login
-├── register.html       ← User registration
-├── inquiry.html        ← Inquiry/quote request page
+├── index.html           ← Homepage (hero, featured products, stories, newsletter)
+├── catalog.html         ← Product catalog with origin/type/status filters
+├── login.html           ← User & admin login
+├── register.html        ← New user registration
+├── inquiry.html         ← Inquiry list & concierge request form
 ├── css/
-│   └── main.css        ← All styles
+│   └── main.css         ← All styles (dark luxury aesthetic)
 ├── js/
-│   ├── data.js         ← Data layer (localStorage / replace with PHP API)
-│   └── main.js         ← Homepage logic, product rendering
+│   ├── data.js          ← Data layer — all API calls to PHP backend
+│   └── main.js          ← Homepage logic, product rendering
 ├── xml/
-│   ├── products.xml    ← XML product data
-│   ├── products.dtd    ← DTD validation
-│   └── products.xslt   ← XSLT transform to HTML
+│   ├── products.xml     ← XML product catalog
+│   ├── products.dtd     ← DTD validation schema
+│   └── products.xslt    ← XSLT transform to HTML
 ├── admin/
-│   ├── index.html      ← Admin dashboard
-│   ├── products.html   ← Product CRUD
-│   ├── inquiries.html  ← Inquiry management
-│   ├── users.html      ← User management
-│   ├── stories.html    ← Client stories CRUD
-│   └── newsletters.html← Newsletter subscribers
-├── database.sql        ← MySQL schema + seed data
-└── php_integration_guide.php ← PHP backend code snippets
+│   ├── index.html       ← Admin dashboard (stats + recent data)
+│   ├── products.html    ← Product CRUD
+│   ├── inquiries.html   ← Inquiry management
+│   ├── users.html       ← User management
+│   ├── stories.html     ← Client stories CRUD
+│   └── newsletters.html ← Newsletter subscribers
+├── api/
+│   ├── db_connect.php   ← MySQL connection
+│   ├── auth.php         ← Login, registration, logout
+│   ├── products.php     ← Product CRUD API
+│   ├── inquiries.php    ← Inquiry submission & management API
+│   ├── stories.php      ← Client stories API
+│   ├── newsletters.php  ← Newsletter subscriptions API
+│   └── users.php        ← User management API (admin)
+├── database.sql         ← MySQL schema + seed data
+└── README.md
 ```
 
 ---
 
-## 🚀 Quick Start (Frontend Only)
+## 🚀 Setup Instructions
 
-1. Open `index.html` in a browser — fully works with localStorage
-2. **Demo credentials:**
-   - Admin: `admin@reschevie.com` / `Admin@2026`
-   - Register a new user to test customer features
+### Prerequisites
+- XAMPP or WAMP (Apache + MySQL + PHP 8+)
 
----
+### Step 1: Install XAMPP
+- Download from https://www.apachefriends.org
+- Start **Apache** and **MySQL** from the XAMPP Control Panel
 
-## 🗄️ Database Integration (PHP + MySQL)
+### Step 2: Clone / Copy project files
+- Copy the `Reschevie/` folder to `C:/xampp/htdocs/Reschevie/`
 
-### Step 1: Set up XAMPP or WAMP
-- Install XAMPP: https://www.apachefriends.org
-- Start Apache and MySQL
-
-### Step 2: Create the database
+### Step 3: Create the database
 1. Open phpMyAdmin → http://localhost/phpmyadmin
-2. Create a new database: `reschevie_db`
-3. Import `database.sql` (Import tab → Choose file → Go)
+2. Click **New** → name it `reschevie_db` → Create
+3. Select `reschevie_db` → click **Import** tab
+4. Choose `database.sql` → click **Go**
 
-### Step 3: Copy project files
-- Copy the `reschevie/` folder to `C:/xampp/htdocs/reschevie/`
+### Step 4: Configure database connection
+- Open `api/db_connect.php`
+- Update `DB_USER` and `DB_PASS` if needed (defaults: `root` / empty password)
 
-### Step 4: Create PHP API files
-Using the snippets in `php_integration_guide.php`, create:
-- `api/db_connect.php` — database connection
-- `api/auth.php` — login, register, logout
-- `api/products.php` — product CRUD
-- `api/inquiries.php` — inquiry submission
-- `api/stories.php` — client stories
-- `api/newsletters.php` — newsletter subscriptions
+### Step 5: Access the site
+- Frontend: http://localhost/Reschevie/
+- Admin panel: http://localhost/Reschevie/admin/
 
-### Step 5: Update js/data.js
-Replace the localStorage functions with `fetch()` calls to your PHP API:
-```javascript
-// Example: Replace synchronous getProducts() with async version
-async function getProducts() {
-  const res = await fetch('api/products.php');
-  return await res.json();
-}
-```
-
-### Step 6: Update HTML files
-Since API calls are async, update all JS to use `await`:
-```javascript
-const products = await getProducts();
-```
+### Default Admin Credentials
+- **Email:** `admin@reschevie.com`
+- **Password:** `reschevieAdmin2026&!`
 
 ---
 
-## 🌐 Web Hosting (Deployment)
+## ✅ Features
 
-### Option A: InfinityFree (Free hosting)
-1. Sign up at https://infinityfree.net
-2. Create account → Create hosting → Get FTP credentials
-3. Upload all files via FileZilla FTP client
-4. Create MySQL database in their control panel
-5. Import `database.sql`
-6. Update `api/db_connect.php` with their credentials
-
-### Option B: 000webhost (Free)
-Similar process — free PHP + MySQL hosting
-
-### Option C: Railway / Render (Modern, free tier)
-- Deploy PHP + MySQL with Git integration
-
----
-
-## ✅ Features Checklist
-
-| Feature | Status |
-|---------|--------|
-| Login/Registration with session | ✅ |
-| User browsing catalog | ✅ |
-| User inquiry list | ✅ |
-| User wishlist | ✅ |
-| Admin dashboard | ✅ |
-| Admin product CRUD | ✅ |
-| Admin inquiry management | ✅ |
-| Admin user management | ✅ |
-| Admin client stories CRUD | ✅ |
-| Admin newsletter management | ✅ |
-| Database design (ERD-based) | ✅ |
-| XML + DTD + XSLT | ✅ |
-| Responsive design | ✅ |
-| Dark luxury aesthetic | ✅ |
-| Session handling | ✅ |
-| Data validation | ✅ |
+| Feature                              | Status |
+|--------------------------------------|--------|
+| Homepage with hero & featured products | ✅ |
+| Product catalog with filters          | ✅ |
+| User registration & login (PHP/MySQL) | ✅ |
+| Session-based authentication          | ✅ |
+| Inquiry list & concierge request form | ✅ |
+| Wishlist (client-side)                | ✅ |
+| Newsletter subscription               | ✅ |
+| Admin dashboard with live stats       | ✅ |
+| Admin product CRUD                    | ✅ |
+| Admin inquiry management              | ✅ |
+| Admin user management                 | ✅ |
+| Admin client stories CRUD             | ✅ |
+| Admin newsletter management           | ✅ |
+| XML product catalog + DTD + XSLT      | ✅ |
+| Responsive dark luxury design         | ✅ |
+| Input validation & security           | ✅ |
+| bcrypt password hashing               | ✅ |
 
 ---
 
-## 📋 Technologies Used
-- HTML5, CSS3 (custom properties, grid, flexbox, animations)
-- JavaScript (ES6+, localStorage for demo)
-- XML, DTD, XSLT
-- MySQL (schema provided)
-- PHP (integration guide provided)
+**Group 5 | Mapúa University | ITS122L | 2026**
 
----
-
-**Group EBK | Mapúa University | ITS122L | February 2026**

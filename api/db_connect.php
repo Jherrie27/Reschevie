@@ -46,45 +46,45 @@ if ($conn->connect_error) {
 $conn->set_charset('utf8mb4');
 
 // ============================================================
-// CONNECTIVITY TEST - testing only, remove sa prod
+// CONNECTIVITY TEST - disabled for production
 // ============================================================
-if (isset($_GET['test'])) {
-    header('Content-Type: application/json');
-    $checks = [];
-
-    $checks['connection'] = $conn->ping()
-        ? ['ok' => true,  'message' => 'Connected to MySQL']
-        : ['ok' => false, 'message' => 'Ping failed'];
-
-    $dbResult = $conn->query("SELECT DATABASE() AS db");
-    $dbRow     = $dbResult->fetch_assoc();
-    $checks['database'] = $dbRow['db'] === DB_NAME
-        ? ['ok' => true,  'message' => "Using database: {$dbRow['db']}"]
-        : ['ok' => false, 'message' => "Wrong database: {$dbRow['db']}"];
-
-    $requiredTables = ['users', 'admins', 'products', 'product_images', 'inquiries', 'inquiry_items', 'client_stories', 'newsletters'];
-    $tableResult    = $conn->query("SHOW TABLES");
-    $existingTables = [];
-    while ($row = $tableResult->fetch_array()) {
-        $existingTables[] = $row[0];
-    }
-
-    $missingTables = array_diff($requiredTables, $existingTables);
-    $checks['tables'] = count($missingTables) === 0
-        ? ['ok' => true,  'message' => 'All required tables found']
-        : ['ok' => false, 'message' => 'Missing tables: ' . implode(', ', $missingTables)];
-
-    $charsetResult = $conn->query("SELECT @@character_set_database AS charset");
-    $charsetRow    = $charsetResult->fetch_assoc();
-    $checks['charset'] = $charsetRow['charset'] === 'utf8mb4'
-        ? ['ok' => true,  'message' => 'Charset: utf8mb4']
-        : ['ok' => false, 'message' => "Charset is '{$charsetRow['charset']}', expected utf8mb4"];
-
-    $allOk = array_reduce($checks, fn($carry, $c) => $carry && $c['ok'], true);
-
-    echo json_encode([
-        'success' => $allOk,
-        'checks'  => $checks
-    ], JSON_PRETTY_PRINT);
-    exit;
-}
+// if (isset($_GET['test'])) {
+//     header('Content-Type: application/json');
+//     $checks = [];
+//
+//     $checks['connection'] = $conn->ping()
+//         ? ['ok' => true,  'message' => 'Connected to MySQL']
+//         : ['ok' => false, 'message' => 'Ping failed'];
+//
+//     $dbResult = $conn->query("SELECT DATABASE() AS db");
+//     $dbRow     = $dbResult->fetch_assoc();
+//     $checks['database'] = $dbRow['db'] === DB_NAME
+//         ? ['ok' => true,  'message' => "Using database: {$dbRow['db']}"]
+//         : ['ok' => false, 'message' => "Wrong database: {$dbRow['db']}"];
+//
+//     $requiredTables = ['users', 'admins', 'products', 'product_images', 'inquiries', 'inquiry_items', 'client_stories', 'newsletters'];
+//     $tableResult    = $conn->query("SHOW TABLES");
+//     $existingTables = [];
+//     while ($row = $tableResult->fetch_array()) {
+//         $existingTables[] = $row[0];
+//     }
+//
+//     $missingTables = array_diff($requiredTables, $existingTables);
+//     $checks['tables'] = count($missingTables) === 0
+//         ? ['ok' => true,  'message' => 'All required tables found']
+//         : ['ok' => false, 'message' => 'Missing tables: ' . implode(', ', $missingTables)];
+//
+//     $charsetResult = $conn->query("SELECT @@character_set_database AS charset");
+//     $charsetRow    = $charsetResult->fetch_assoc();
+//     $checks['charset'] = $charsetRow['charset'] === 'utf8mb4'
+//         ? ['ok' => true,  'message' => 'Charset: utf8mb4']
+//         : ['ok' => false, 'message' => "Charset is '{$charsetRow['charset']}', expected utf8mb4"];
+//
+//     $allOk = array_reduce($checks, fn($carry, $c) => $carry && $c['ok'], true);
+//
+//     echo json_encode([
+//         'success' => $allOk,
+//         'checks'  => $checks
+//     ], JSON_PRETTY_PRINT);
+//     exit;
+// }

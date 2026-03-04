@@ -292,7 +292,7 @@ async function deleteUser(userId) {
  * @returns {Promise<{success: boolean, message?: string}>}
  */
 async function subscribeNewsletter(email) {
-  return await _apiPost('api/newsletter.php', { email });
+  return await _apiPost('api/newsletters.php', { email });
 }
 
 /**
@@ -300,7 +300,7 @@ async function subscribeNewsletter(email) {
  * @returns {Promise<Array>}
  */
 async function getNewsletters() {
-  return (await _apiGet('api/newsletter.php')) ?? [];
+  return (await _apiGet('api/newsletters.php')) ?? [];
 }
 
 /**
@@ -309,7 +309,7 @@ async function getNewsletters() {
  * @returns {Promise<{success: boolean}>}
  */
 async function unsubscribeNewsletter(email) {
-  return await _apiDelete(`api/newsletter.php?email=${encodeURIComponent(email)}`);
+  return await _apiDelete(`api/newsletters.php?email=${encodeURIComponent(email)}`);
 }
 
 // ===========================

@@ -1,12 +1,9 @@
-﻿<?php
-ob_start();
-session_start();
-include 'db_connect.php';
-header('Content-Type: application/json');
+<?php
 // ============================================================
 // api/products.php — CRUD for products
 // ============================================================
 
+ob_start();
 session_start();
 include 'db_connect.php';
 
@@ -141,7 +138,7 @@ if ($method === 'POST') {
     // s=string, d=double, i=integer
     // product_price=d (nullable), product_price_poa=i, product_featured=i
     $stmt->bind_param(
-        "sssssssdisi s",
+        "sssssssdisis",
         $name, $description, $type, $origin,
         $materials, $karat, $weight,
         $price, $poa, $status, $featured, $emoji
@@ -224,7 +221,7 @@ if ($method === 'PUT') {
     );
 
     $stmt->bind_param(
-        "sssssssdi ssi",
+        "sssssssdisisi",
         $name, $description, $type, $origin,
         $materials, $karat, $weight,
         $price, $poa, $status, $featured, $emoji,

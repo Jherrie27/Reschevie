@@ -37,9 +37,9 @@ CREATE TABLE admins (
   created_at     DATETIME     DEFAULT CURRENT_TIMESTAMP
 );
 
--- Insert default admin (password: Admin@2026 — hash this in production!)
+-- Insert default admin (bcrypt hash of the initial password; change on first login)
 INSERT INTO admins (admin_email, admin_password, admin_fname, admin_lname)
-VALUES ('admin@reschevie.com', 'reschevieAdmin2026&!', 'Samantha', 'Sayaman');
+VALUES ('admin@reschevie.com', '$2y$12$zqN1QwKu5/apy5VO14RAuOr10azycqazLGDlzSwxJggTgT6WCuMYW', 'Samantha', 'Sayaman');
 
 -- ============================================================
 -- TABLE: products

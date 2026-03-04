@@ -9,12 +9,6 @@ error_reporting(E_ALL);
 // api/auth.php — Login / Registration / Logout
 // ============================================================
 
-session_start();
-include 'db_connect.php';
-
-header('Content-Type: application/json');
-header('X-Content-Type-Options: nosniff');
-
 // Only POST (GET logout okay, but POST safer)
 $method = $_SERVER['REQUEST_METHOD'];
 $action = $_POST['action'] ?? $_GET['action'] ?? '';

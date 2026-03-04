@@ -3,6 +3,7 @@ ob_start();
 session_start();
 include 'db_connect.php';
 header('Content-Type: application/json');
+header('X-Content-Type-Options: nosniff');
 
 // ============================================================
 // api/newsletters.php — Newsletter subscriptions
@@ -17,12 +18,6 @@ header('Content-Type: application/json');
 // GET    — list all active subscribers (admin only)
 // DELETE — unsubscribe an email (own account or admin)
 // ============================================================
-
-session_start();
-include 'db_connect.php';
-
-header('Content-Type: application/json');
-header('X-Content-Type-Options: nosniff');
 
 $method = $_SERVER['REQUEST_METHOD'];
 

@@ -3,6 +3,7 @@ ob_start();
 session_start();
 include 'db_connect.php';
 header('Content-Type: application/json');
+header('X-Content-Type-Options: nosniff');
 
 // ============================================================
 // api/stories.php — Client stories / testimonials
@@ -11,12 +12,6 @@ header('Content-Type: application/json');
 // PUT    — update a story (admin only)
 // DELETE — delete a story (admin only)
 // ============================================================
-
-session_start();
-include 'db_connect.php';
-
-header('Content-Type: application/json');
-header('X-Content-Type-Options: nosniff');
 
 $method = $_SERVER['REQUEST_METHOD'];
 

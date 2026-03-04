@@ -3,6 +3,7 @@ ob_start();
 session_start();
 include 'db_connect.php';
 header('Content-Type: application/json');
+header('X-Content-Type-Options: nosniff');
 
 // ============================================================
 // api/inquiries.php — Submit & manage inquiries
@@ -11,12 +12,6 @@ header('Content-Type: application/json');
 // PUT    — update inquiry status (admin only)
 // DELETE — delete an inquiry (admin only)
 // ============================================================
-
-session_start();
-include 'db_connect.php';
-
-header('Content-Type: application/json');
-header('X-Content-Type-Options: nosniff');
 
 $method = $_SERVER['REQUEST_METHOD'];
 

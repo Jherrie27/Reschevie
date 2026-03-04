@@ -3,15 +3,10 @@ ob_start();
 session_start();
 include 'db_connect.php';
 header('Content-Type: application/json');
+header('X-Content-Type-Options: nosniff');
 // ============================================================
 // api/products.php — CRUD for products
 // ============================================================
-
-session_start();
-include 'db_connect.php';
-
-header('Content-Type: application/json');
-header('X-Content-Type-Options: nosniff');
 
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -141,7 +136,7 @@ if ($method === 'POST') {
     // s=string, d=double, i=integer
     // product_price=d (nullable), product_price_poa=i, product_featured=i
     $stmt->bind_param(
-        "sssssssdisi s",
+        "sssssssdisis",
         $name, $description, $type, $origin,
         $materials, $karat, $weight,
         $price, $poa, $status, $featured, $emoji
@@ -224,7 +219,7 @@ if ($method === 'PUT') {
     );
 
     $stmt->bind_param(
-        "sssssssdi ssi",
+        "sssssssdisisi",
         $name, $description, $type, $origin,
         $materials, $karat, $weight,
         $price, $poa, $status, $featured, $emoji,

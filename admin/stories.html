@@ -1,78 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Client Stories — Reschevie Admin</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="../css/main.css">
 </head>
+
 <body>
-<div class="admin-layout">
-  <aside class="admin-sidebar">
-    <div class="admin-sidebar-logo">
-      <a href="../index.html" class="logo"><span class="logo-r">R</span>eschevie</a>
-      <span>Admin Panel</span>
-    </div>
-    <nav class="admin-nav">
-      <a href="index.html" class="admin-nav-item"><span class="admin-nav-icon">📊</span> Dashboard</a>
-      <a href="products.html" class="admin-nav-item"><span class="admin-nav-icon">💍</span> Products</a>
-      <a href="inquiries.html" class="admin-nav-item"><span class="admin-nav-icon">📩</span> Inquiries</a>
-      <a href="users.html" class="admin-nav-item"><span class="admin-nav-icon">👤</span> Users</a>
-      <a href="stories.html" class="admin-nav-item active"><span class="admin-nav-icon">💬</span> Client Stories</a>
-      <a href="newsletters.html" class="admin-nav-item"><span class="admin-nav-icon">✉️</span> Newsletters</a>
-      <div style="height:1px; background:rgba(197,160,112,0.1); margin:16px 0;"></div>
-      <a href="../index.html" class="admin-nav-item"><span class="admin-nav-icon">🌐</span> View Site</a>
-      <a href="#" class="admin-nav-item" id="logout-btn"><span class="admin-nav-icon">🚪</span> Sign Out</a>
-    </nav>
-  </aside>
-  <main class="admin-main">
-    <div class="admin-header">
-      <h1>Client Stories</h1>
-      <button class="btn-gold" id="add-story-btn">+ Add Story</button>
-    </div>
-    <div class="admin-table-wrap">
-      <table>
-        <thead><tr><th>Title</th><th>Author</th><th>Description</th><th>Date</th><th>Actions</th></tr></thead>
-        <tbody id="stories-table"></tbody>
-      </table>
-    </div>
-  </main>
-</div>
-
-<div class="admin-modal-overlay" id="story-modal">
-  <div class="admin-modal">
-    <button class="modal-close" onclick="document.getElementById('story-modal').classList.remove('open')">✕</button>
-    <h2 id="story-modal-title">Add Story</h2>
-    <input type="hidden" id="s-id">
-    <div class="form-group"><label class="form-label">Story Title *</label><input type="text" id="s-name" class="form-input" placeholder="e.g. A Wedding That Started a Legacy"></div>
-    <div class="form-group"><label class="form-label">Author *</label><input type="text" id="s-author" class="form-input" placeholder="Client name"></div>
-    <div class="form-group"><label class="form-label">Story / Testimonial *</label><textarea id="s-desc" class="form-input" rows="4" placeholder="The client's story..."></textarea></div>
-    <div class="form-group"><label class="form-label">Date Posted</label><input type="date" id="s-date" class="form-input"></div>
-    <div id="s-err" class="form-error" style="display:none;margin-bottom:12px;"></div>
-    <button class="btn-gold" style="width:100%;" id="save-story-btn">Save Story</button>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-logo">
+        <a href="../index.html" class="logo"><span class="logo-r">R</span>eschevie</a>
+        <span>Admin Panel</span>
+      </div>
+      <nav class="admin-nav">
+        <a href="index.html" class="admin-nav-item"><span class="admin-nav-icon">📊</span> Dashboard</a>
+        <a href="products.html" class="admin-nav-item"><span class="admin-nav-icon">💍</span> Products</a>
+        <a href="inquiries.html" class="admin-nav-item"><span class="admin-nav-icon">📩</span> Inquiries</a>
+        <a href="users.html" class="admin-nav-item"><span class="admin-nav-icon">👤</span> Users</a>
+        <a href="stories.html" class="admin-nav-item active"><span class="admin-nav-icon">💬</span> Client Stories</a>
+        <a href="newsletters.html" class="admin-nav-item"><span class="admin-nav-icon">✉️</span> Newsletters</a>
+        <div style="height:1px; background:rgba(197,160,112,0.1); margin:16px 0;"></div>
+        <a href="../index.html" class="admin-nav-item"><span class="admin-nav-icon">🌐</span> View Site</a>
+        <a href="#" class="admin-nav-item" id="logout-btn"><span class="admin-nav-icon">🚪</span> Sign Out</a>
+      </nav>
+    </aside>
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>Client Stories</h1>
+        <button class="btn-gold" id="add-story-btn">+ Add Story</button>
+      </div>
+      <div class="admin-table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Author</th>
+              <th>Description</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="stories-table"></tbody>
+        </table>
+      </div>
+    </main>
   </div>
-</div>
 
-<script src="../js/data.js"></script>
-<script>
-let _storiesCache = [];
+  <div class="admin-modal-overlay" id="story-modal">
+    <div class="admin-modal">
+      <button class="modal-close" onclick="document.getElementById('story-modal').classList.remove('open')">✕</button>
+      <h2 id="story-modal-title">Add Story</h2>
+      <input type="hidden" id="s-id">
+      <div class="form-group"><label class="form-label">Story Title *</label><input type="text" id="s-name"
+          class="form-input" placeholder="e.g. A Wedding That Started a Legacy"></div>
+      <div class="form-group"><label class="form-label">Author *</label><input type="text" id="s-author"
+          class="form-input" placeholder="Client name"></div>
+      <div class="form-group"><label class="form-label">Story / Testimonial *</label><textarea id="s-desc"
+          class="form-input" rows="4" placeholder="The client's story..."></textarea></div>
+      <div class="form-group"><label class="form-label">Date Posted</label><input type="date" id="s-date"
+          class="form-input"></div>
+      <div id="s-err" class="form-error" style="display:none;margin-bottom:12px;"></div>
+      <button class="btn-gold" style="width:100%;" id="save-story-btn">Save Story</button>
+    </div>
+  </div>
 
-document.addEventListener('DOMContentLoaded', async () => {
-  const session = getSession();
-  if (!session || session.role !== 'admin') { window.location.href = '../login.html'; return; }
-  document.getElementById('logout-btn').addEventListener('click', async (e) => { e.preventDefault(); await logout(); window.location.href = '../login.html'; });
-  document.getElementById('add-story-btn').addEventListener('click', openAdd);
-  document.getElementById('save-story-btn').addEventListener('click', handleSaveStory);
-  document.getElementById('story-modal').addEventListener('click', (e) => { if (e.target === document.getElementById('story-modal')) document.getElementById('story-modal').classList.remove('open'); });
-  await renderTable();
-  document.getElementById('s-date').value = new Date().toISOString().split('T')[0];
-});
+  <script src="../js/data.js"></script>
+  <script>
+    let _storiesCache = [];
 
-async function renderTable() {
-  _storiesCache = await getStories();
-  document.getElementById('stories-table').innerHTML = _storiesCache.length
-    ? _storiesCache.map(s => `<tr>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const session = getSession();
+      if (!session || session.role !== 'admin') { window.location.href = '../login.html'; return; }
+      document.getElementById('logout-btn').addEventListener('click', async (e) => { e.preventDefault(); await logout(); window.location.href = '../login.html'; });
+      document.getElementById('add-story-btn').addEventListener('click', openAdd);
+      document.getElementById('save-story-btn').addEventListener('click', handleSaveStory);
+      document.getElementById('story-modal').addEventListener('click', (e) => { if (e.target === document.getElementById('story-modal')) document.getElementById('story-modal').classList.remove('open'); });
+      await renderTable();
+      document.getElementById('s-date').value = new Date().toISOString().split('T')[0];
+    });
+
+    async function renderTable() {
+      _storiesCache = await getStories();
+      document.getElementById('stories-table').innerHTML = _storiesCache.length
+        ? _storiesCache.map(s => `<tr>
         <td><strong style="color:var(--white);">${s.story_name}</strong></td>
         <td>${s.story_author}</td>
         <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${s.story_description}</td>
@@ -82,81 +98,82 @@ async function renderTable() {
           <button class="action-btn action-delete" onclick="handleDeleteStory(${s.story_id})" style="margin-left:4px;">Delete</button>
         </td>
       </tr>`).join('')
-    : `<tr><td colspan="5" style="text-align:center;color:var(--gray-light);padding:32px;">No stories yet</td></tr>`;
-}
+        : `<tr><td colspan="5" style="text-align:center;color:var(--gray-light);padding:32px;">No stories yet</td></tr>`;
+    }
 
-function openAdd() {
-  document.getElementById('story-modal-title').textContent = 'Add Story';
-  ['s-id','s-name','s-author','s-desc'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('s-date').value = new Date().toISOString().split('T')[0];
-  document.getElementById('s-err').style.display = 'none';
-  document.getElementById('story-modal').classList.add('open');
-}
+    function openAdd() {
+      document.getElementById('story-modal-title').textContent = 'Add Story';
+      ['s-id', 's-name', 's-author', 's-desc'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('s-date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('s-err').style.display = 'none';
+      document.getElementById('story-modal').classList.add('open');
+    }
 
-function openEdit(id) {
-  const s = _storiesCache.find(x => x.story_id == id);
-  if (!s) return;
-  document.getElementById('story-modal-title').textContent = 'Edit Story';
-  document.getElementById('s-id').value = s.story_id;
-  document.getElementById('s-name').value = s.story_name;
-  document.getElementById('s-author').value = s.story_author;
-  document.getElementById('s-desc').value = s.story_description;
-  document.getElementById('s-date').value = s.story_date_posted;
-  document.getElementById('s-err').style.display = 'none';
-  document.getElementById('story-modal').classList.add('open');
-}
+    function openEdit(id) {
+      const s = _storiesCache.find(x => x.story_id == id);
+      if (!s) return;
+      document.getElementById('story-modal-title').textContent = 'Edit Story';
+      document.getElementById('s-id').value = s.story_id;
+      document.getElementById('s-name').value = s.story_name;
+      document.getElementById('s-author').value = s.story_author;
+      document.getElementById('s-desc').value = s.story_description;
+      document.getElementById('s-date').value = s.story_date_posted;
+      document.getElementById('s-err').style.display = 'none';
+      document.getElementById('story-modal').classList.add('open');
+    }
 
-async function handleSaveStory() {
-  const errEl = document.getElementById('s-err');
-  const name = document.getElementById('s-name').value.trim();
-  const author = document.getElementById('s-author').value.trim();
-  const desc = document.getElementById('s-desc').value.trim();
-  if (!name || !author || !desc) { errEl.textContent = 'Please fill in all required fields.'; errEl.style.display = 'block'; return; }
-  errEl.style.display = 'none';
+    async function handleSaveStory() {
+      const errEl = document.getElementById('s-err');
+      const name = document.getElementById('s-name').value.trim();
+      const author = document.getElementById('s-author').value.trim();
+      const desc = document.getElementById('s-desc').value.trim();
+      if (!name || !author || !desc) { errEl.textContent = 'Please fill in all required fields.'; errEl.style.display = 'block'; return; }
+      errEl.style.display = 'none';
 
-  const editId = document.getElementById('s-id').value;
-  const storyData = {
-    story_name: name,
-    story_author: author,
-    story_description: desc,
-    story_date_posted: document.getElementById('s-date').value
-  };
+      const editId = document.getElementById('s-id').value;
+      const storyData = {
+        story_name: name,
+        story_author: author,
+        story_description: desc,
+        story_date_posted: document.getElementById('s-date').value
+      };
 
-  const btn = document.getElementById('save-story-btn');
-  btn.disabled = true;
-  btn.textContent = 'Saving...';
+      const btn = document.getElementById('save-story-btn');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
 
-  let result;
-  if (editId) {
-    storyData.story_id = parseInt(editId);
-    result = await updateStory(storyData);
-  } else {
-    result = await addStory(storyData);
-  }
+      let result;
+      if (editId) {
+        storyData.story_id = parseInt(editId);
+        result = await updateStory(storyData);
+      } else {
+        result = await addStory(storyData);
+      }
 
-  btn.disabled = false;
-  btn.textContent = 'Save Story';
+      btn.disabled = false;
+      btn.textContent = 'Save Story';
 
-  if (result && result.success) {
-    document.getElementById('story-modal').classList.remove('open');
-    await renderTable();
-    showToast(editId ? 'Story updated!' : 'Story added!');
-  } else {
-    errEl.textContent = result?.message || 'Failed to save story. Please try again.';
-    errEl.style.display = 'block';
-  }
-}
+      if (result && result.success) {
+        document.getElementById('story-modal').classList.remove('open');
+        await renderTable();
+        showToast(editId ? 'Story updated!' : 'Story added!');
+      } else {
+        errEl.textContent = result?.message || 'Failed to save story. Please try again.';
+        errEl.style.display = 'block';
+      }
+    }
 
-async function handleDeleteStory(id) {
-  if (!confirm('Delete this story?')) return;
-  const result = await deleteStory(id);
-  if (result && result.success) {
-    await renderTable();
-    showToast('Story deleted.');
-  } else {
-    showToast(result?.message || 'Failed to delete story.');
-  }
-}
-</script>
+    async function handleDeleteStory(id) {
+      if (!confirm('Delete this story?')) return;
+      const result = await deleteStory(id);
+      if (result && result.success) {
+        await renderTable();
+        showToast('Story deleted.');
+      } else {
+        showToast(result?.message || 'Failed to delete story.');
+      }
+    }
+  </script>
 </body>
+
 </html>

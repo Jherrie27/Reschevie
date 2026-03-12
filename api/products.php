@@ -16,7 +16,8 @@ $method = $_SERVER['REQUEST_METHOD'];
 // ADMIN GATE — must be declared BEFORE any write operation
 // GET is intentionally public; everything else requires admin
 // ============================================================
-function requireAdmin() {
+function requireAdmin()
+{
     if (
         !isset($_SESSION['user']) ||
         $_SESSION['user']['role'] !== 'admin'
@@ -29,7 +30,7 @@ function requireAdmin() {
 
 // Allowed filter values
 const ALLOWED_ORIGINS = ['Italy', 'Japan', 'Saudi Arabia', 'Hong Kong'];
-const ALLOWED_TYPES   = ['necklace', 'ring', 'bracelet', 'earring', 'pendant'];
+const ALLOWED_TYPES = ['necklace', 'ring', 'bracelet', 'earring', 'pendant'];
 const ALLOWED_STATUSES = ['available', 'sold', 'reserved'];
 
 // ============================================================
@@ -37,29 +38,29 @@ const ALLOWED_STATUSES = ['available', 'sold', 'reserved'];
 // ============================================================
 if ($method === 'GET') {
     $conditions = [];
-    $params     = [];
-    $types      = '';
+    $params = [];
+    $types = '';
 
     if (!empty($_GET['origin'])) {
         $conditions[] = "product_origin = ?";
-        $params[]     = $_GET['origin'];
-        $types       .= 's';
+        $params[] = $_GET['origin'];
+        $types .= 's';
     }
 
     if (!empty($_GET['type'])) {
         $conditions[] = "product_type = ?";
-        $params[]     = $_GET['type'];
-        $types       .= 's';
+        $params[] = $_GET['type'];
+        $types .= 's';
     }
 
     if (!empty($_GET['status'])) {
         $conditions[] = "product_status = ?";
-        $params[]     = $_GET['status'];
-        $types       .= 's';
+        $params[] = $_GET['status'];
+        $types .= 's';
     }
 
     $where = $conditions ? 'WHERE ' . implode(' AND ', $conditions) : '';
-    $sql   = "SELECT * FROM products $where ORDER BY product_featured DESC, product_id DESC";
+    $sql = "SELECT * FROM products $where ORDER BY product_featured DESC, product_id DESC";
 
     $stmt = $conn->prepare($sql);
 
@@ -68,7 +69,7 @@ if ($method === 'GET') {
     }
 
     $stmt->execute();
-    $result   = $stmt->get_result();
+    $result = $stmt->get_result();
     $products = [];
 
     while ($row = $result->fetch_assoc()) {
@@ -114,18 +115,18 @@ if ($method === 'POST') {
         exit;
     }
 
-    $name        = trim($data['product_name']);
+    $name = trim($data['product_name']);
     $description = trim($data['product_description'] ?? '');
-    $type        = $data['product_type'];
-    $origin      = trim($data['product_origin'] ?? '');
-    $materials   = trim($data['product_materials'] ?? '');
-    $karat       = trim($data['product_karat'] ?? '');
-    $weight      = trim($data['product_weight'] ?? '');
-    $poa         = !empty($data['product_price_poa']) ? 1 : 0;
-    $price       = $poa ? null : (float)($data['product_price'] ?? 0);
-    $status      = $data['product_status'];
-    $featured    = !empty($data['product_featured']) ? 1 : 0;
-    $emoji       = trim($data['product_emoji'] ?? '');
+    $type = $data['product_type'];
+    $origin = trim($data['product_origin'] ?? '');
+    $materials = trim($data['product_materials'] ?? '');
+    $karat = trim($data['product_karat'] ?? '');
+    $weight = trim($data['product_weight'] ?? '');
+    $poa = !empty($data['product_price_poa']) ? 1 : 0;
+    $price = $poa ? null : (float) ($data['product_price'] ?? 0);
+    $status = $data['product_status'];
+    $featured = !empty($data['product_featured']) ? 1 : 0;
+    $emoji = trim($data['product_emoji'] ?? '');
 
     $stmt = $conn->prepare(
         "INSERT INTO products
@@ -139,9 +140,18 @@ if ($method === 'POST') {
     // product_price=d (nullable), product_price_poa=i, product_featured=i
     $stmt->bind_param(
         "sssssssdisis",
-        $name, $description, $type, $origin,
-        $materials, $karat, $weight,
-        $price, $poa, $status, $featured, $emoji
+        $name,
+        $description,
+        $type,
+        $origin,
+        $materials,
+        $karat,
+        $weight,
+        $price,
+        $poa,
+        $status,
+        $featured,
+        $emoji
     );
 
     if ($stmt->execute()) {
@@ -170,7 +180,7 @@ if ($method === 'PUT') {
         exit;
     }
 
-    $id = (int)($data['product_id'] ?? 0);
+    $id = (int) ($data['product_id'] ?? 0);
     if ($id <= 0) {
         echo json_encode(['success' => false, 'message' => 'Invalid product ID']);
         exit;
@@ -199,18 +209,18 @@ if ($method === 'PUT') {
         exit;
     }
 
-    $name        = trim($data['product_name']        ?? '');
+    $name = trim($data['product_name'] ?? '');
     $description = trim($data['product_description'] ?? '');
-    $type        = $data['product_type']              ?? '';
-    $origin      = trim($data['product_origin']      ?? '');
-    $materials   = trim($data['product_materials']   ?? '');
-    $karat       = trim($data['product_karat']       ?? '');
-    $weight      = trim($data['product_weight']      ?? '');
-    $poa         = !empty($data['product_price_poa']) ? 1 : 0;
-    $price       = $poa ? null : (float)($data['product_price'] ?? 0);
-    $status      = $data['product_status']            ?? '';
-    $featured    = !empty($data['product_featured'])  ? 1 : 0;
-    $emoji       = trim($data['product_emoji']        ?? '');
+    $type = $data['product_type'] ?? '';
+    $origin = trim($data['product_origin'] ?? '');
+    $materials = trim($data['product_materials'] ?? '');
+    $karat = trim($data['product_karat'] ?? '');
+    $weight = trim($data['product_weight'] ?? '');
+    $poa = !empty($data['product_price_poa']) ? 1 : 0;
+    $price = $poa ? null : (float) ($data['product_price'] ?? 0);
+    $status = $data['product_status'] ?? '';
+    $featured = !empty($data['product_featured']) ? 1 : 0;
+    $emoji = trim($data['product_emoji'] ?? '');
 
     $stmt = $conn->prepare(
         "UPDATE products
@@ -222,9 +232,18 @@ if ($method === 'PUT') {
 
     $stmt->bind_param(
         "sssssssdisisi",
-        $name, $description, $type, $origin,
-        $materials, $karat, $weight,
-        $price, $poa, $status, $featured, $emoji,
+        $name,
+        $description,
+        $type,
+        $origin,
+        $materials,
+        $karat,
+        $weight,
+        $price,
+        $poa,
+        $status,
+        $featured,
+        $emoji,
         $id
     );
 
@@ -245,7 +264,7 @@ if ($method === 'PUT') {
 if ($method === 'DELETE') {
     requireAdmin();
 
-    $id = (int)($_GET['id'] ?? 0);
+    $id = (int) ($_GET['id'] ?? 0);
     if ($id <= 0) {
         echo json_encode(['success' => false, 'message' => 'Invalid product ID']);
         exit;

@@ -80,7 +80,7 @@ async function login(email, password) {
   form.append('email', email);
   form.append('password', password);
   try {
-    const res = await fetch('api/auth.php', {
+    const res = await fetch('/api/auth.php', {
       method: 'POST',
       credentials: 'include',
       body: form
@@ -104,7 +104,7 @@ async function register(userData) {
   form.append('action', 'register');
   Object.entries(userData).forEach(([k, v]) => form.append(k, v));
   try {
-    const res = await fetch('api/auth.php', {
+    const res = await fetch('/api/auth.php', {
       method: 'POST',
       credentials: 'include',
       body: form
@@ -125,7 +125,7 @@ async function logout() {
   const form = new FormData();
   form.append('action', 'logout');
   try {
-    const res = await fetch('api/auth.php', {
+    const res = await fetch('/api/auth.php', {
       method: 'POST',
       credentials: 'include',
       body: form
@@ -149,10 +149,10 @@ async function logout() {
 async function getProducts(filters = {}) {
   const params = new URLSearchParams();
   if (filters.origin) params.set('origin', filters.origin);
-  if (filters.type)   params.set('type',   filters.type);
+  if (filters.type) params.set('type', filters.type);
   if (filters.status) params.set('status', filters.status);
   const query = params.toString() ? `?${params}` : '';
-  return (await _apiGet(`api/products.php${query}`)) ?? [];
+  return (await _apiGet(`/api/products.php${query}`)) ?? [];
 }
 
 /**
@@ -161,7 +161,7 @@ async function getProducts(filters = {}) {
  * @returns {Promise<{success: boolean, id?: number}>}
  */
 async function addProduct(productData) {
-  return await _apiPost('api/products.php', productData);
+  return await _apiPost('/api/products.php', productData);
 }
 
 /**
@@ -170,7 +170,7 @@ async function addProduct(productData) {
  * @returns {Promise<{success: boolean}>}
  */
 async function updateProduct(productData) {
-  return await _apiPut('api/products.php', productData);
+  return await _apiPut('/api/products.php', productData);
 }
 
 /**
@@ -179,7 +179,7 @@ async function updateProduct(productData) {
  * @returns {Promise<{success: boolean}>}
  */
 async function deleteProduct(productId) {
-  return await _apiDelete(`api/products.php?id=${productId}`);
+  return await _apiDelete(`/api/products.php?id=${productId}`);
 }
 
 // ===========================
@@ -192,7 +192,7 @@ async function deleteProduct(productId) {
  * @returns {Promise<{success: boolean, inquiry_id?: number}>}
  */
 async function submitInquiry(inquiryData) {
-  return await _apiPost('api/inquiries.php', inquiryData);
+  return await _apiPost('/api/inquiries.php', inquiryData);
 }
 
 /**
@@ -200,7 +200,7 @@ async function submitInquiry(inquiryData) {
  * @returns {Promise<Array>}
  */
 async function getInquiries() {
-  return (await _apiGet('api/inquiries.php')) ?? [];
+  return (await _apiGet('/api/inquiries.php')) ?? [];
 }
 
 /**
@@ -210,7 +210,7 @@ async function getInquiries() {
  * @returns {Promise<{success: boolean}>}
  */
 async function updateInquiryStatus(inquiryId, status) {
-  return await _apiPut('api/inquiries.php', { inquiry_id: inquiryId, status });
+  return await _apiPut('/api/inquiries.php', { inquiry_id: inquiryId, status });
 }
 
 /**
@@ -219,7 +219,7 @@ async function updateInquiryStatus(inquiryId, status) {
  * @returns {Promise<{success: boolean}>}
  */
 async function deleteInquiry(inquiryId) {
-  return await _apiDelete(`api/inquiries.php?id=${inquiryId}`);
+  return await _apiDelete(`/api/inquiries.php?id=${inquiryId}`);
 }
 
 // ===========================
@@ -231,7 +231,7 @@ async function deleteInquiry(inquiryId) {
  * @returns {Promise<Array>}
  */
 async function getStories() {
-  return (await _apiGet('api/stories.php')) ?? [];
+  return (await _apiGet('/api/stories.php')) ?? [];
 }
 
 /**
@@ -240,7 +240,7 @@ async function getStories() {
  * @returns {Promise<{success: boolean, id?: number}>}
  */
 async function addStory(storyData) {
-  return await _apiPost('api/stories.php', storyData);
+  return await _apiPost('/api/stories.php', storyData);
 }
 
 /**
@@ -249,7 +249,7 @@ async function addStory(storyData) {
  * @returns {Promise<{success: boolean}>}
  */
 async function updateStory(storyData) {
-  return await _apiPut('api/stories.php', storyData);
+  return await _apiPut('/api/stories.php', storyData);
 }
 
 /**
@@ -258,7 +258,7 @@ async function updateStory(storyData) {
  * @returns {Promise<{success: boolean}>}
  */
 async function deleteStory(storyId) {
-  return await _apiDelete(`api/stories.php?id=${storyId}`);
+  return await _apiDelete(`/api/stories.php?id=${storyId}`);
 }
 
 // ===========================
@@ -270,7 +270,7 @@ async function deleteStory(storyId) {
  * @returns {Promise<Array>}
  */
 async function getUsers() {
-  return (await _apiGet('api/users.php')) ?? [];
+  return (await _apiGet('/api/users.php')) ?? [];
 }
 
 /**
@@ -279,7 +279,7 @@ async function getUsers() {
  * @returns {Promise<{success: boolean}>}
  */
 async function updateUser(userData) {
-  return await _apiPut('api/users.php', userData);
+  return await _apiPut('/api/users.php', userData);
 }
 
 /**
@@ -288,7 +288,7 @@ async function updateUser(userData) {
  * @returns {Promise<{success: boolean}>}
  */
 async function deleteUser(userId) {
-  return await _apiDelete(`api/users.php?id=${userId}`);
+  return await _apiDelete(`/api/users.php?id=${userId}`);
 }
 
 // ===========================
@@ -301,7 +301,7 @@ async function deleteUser(userId) {
  * @returns {Promise<{success: boolean, message?: string}>}
  */
 async function subscribeNewsletter(email) {
-  return await _apiPost('api/newsletters.php', { email });
+  return await _apiPost('/api/newsletters.php', { email });
 }
 
 /**
@@ -309,7 +309,7 @@ async function subscribeNewsletter(email) {
  * @returns {Promise<Array>}
  */
 async function getNewsletters() {
-  return (await _apiGet('api/newsletters.php')) ?? [];
+  return (await _apiGet('/api/newsletters.php')) ?? [];
 }
 
 /**
@@ -318,7 +318,7 @@ async function getNewsletters() {
  * @returns {Promise<{success: boolean}>}
  */
 async function unsubscribeNewsletter(email) {
-  return await _apiDelete(`api/newsletters.php?email=${encodeURIComponent(email)}`);
+  return await _apiDelete(`/api/newsletters.php?email=${encodeURIComponent(email)}`);
 }
 
 // ===========================
@@ -326,7 +326,7 @@ async function unsubscribeNewsletter(email) {
 // ===========================
 
 function getSession() {
-  try { return JSON.parse(sessionStorage.getItem('reschevie_session')); } catch(e) { return null; }
+  try { return JSON.parse(sessionStorage.getItem('reschevie_session')); } catch (e) { return null; }
 }
 function setSession(data) { sessionStorage.setItem('reschevie_session', JSON.stringify(data)); }
 function clearSession() { sessionStorage.removeItem('reschevie_session'); }
@@ -336,7 +336,7 @@ function clearSession() { sessionStorage.removeItem('reschevie_session'); }
 // ===========================
 
 function getCart() {
-  try { return JSON.parse(localStorage.getItem('reschevie_cart')) || []; } catch(e) { return []; }
+  try { return JSON.parse(localStorage.getItem('reschevie_cart')) || []; } catch (e) { return []; }
 }
 function saveCart(c) { localStorage.setItem('reschevie_cart', JSON.stringify(c)); }
 function addToCart(productId) {
@@ -352,7 +352,7 @@ function isInCart(productId) { return getCart().includes(productId); }
 // ===========================
 
 function getWishlist() {
-  try { return JSON.parse(localStorage.getItem('reschevie_wishlist')) || []; } catch(e) { return []; }
+  try { return JSON.parse(localStorage.getItem('reschevie_wishlist')) || []; } catch (e) { return []; }
 }
 function toggleWishlist(productId) {
   const wl = getWishlist();
@@ -379,7 +379,7 @@ function isWishlisted(productId) { return getWishlist().includes(productId); }
 function formatDate(str) {
   try {
     return new Date(str).toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' });
-  } catch(e) { return str; }
+  } catch (e) { return str; }
 }
 
 function showToast(msg) {

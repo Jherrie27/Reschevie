@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — Reschevie</title>
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    body { background: var(--bg-dark); color: var(--gold); font-family: var(--font-sans); }
+    .dashboard-container { max-width: 1200px; margin: 40px auto; padding: 32px; background: #18120a; border-radius: 16px; box-shadow: 0 4px 24px #0002; }
+    h1, h2 { color: var(--gold); font-family: var(--font-serif); }
+    .section { margin-bottom: 48px; }
+    .table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+    .table th, .table td { padding: 12px 16px; border-bottom: 1px solid #2a1e0e; }
+    .table th { background: #22180c; color: var(--gold); }
+    .table tr:hover { background: #2a1e0e; }
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; margin-bottom: 6px; color: var(--gold); }
+    .form-input, .form-select { width: 100%; padding: 8px 12px; border-radius: 6px; border: 1px solid #2a1e0e; background: #22180c; color: var(--gold); }
+    .btn { padding: 8px 18px; border-radius: 6px; border: none; background: var(--gold); color: #18120a; font-weight: 600; cursor: pointer; margin-right: 8px; }
+    .btn-danger { background: #a00; color: #fff; }
+    .btn-outline { background: none; border: 1px solid var(--gold); color: var(--gold); }
+    .dashboard-nav { display: flex; gap: 24px; margin-bottom: 32px; }
+    .dashboard-nav a { color: var(--gold); font-weight: 600; text-decoration: none; padding: 8px 16px; border-radius: 6px; background: #22180c; }
+    .dashboard-nav a.active { background: var(--gold); color: #18120a; }
+  </style>
+</head>
+<body>
+  <nav class="navbar scrolled" id="navbar">
+    <div class="nav-inner">
+      <a href="index.html" class="logo"><span class="logo-r">R</span>eschevie</a>
+      <ul class="nav-links">
+        <li><a href="catalog.html">Catalog</a></li>
+        <li><a href="index.html#curations">Curations</a></li>
+        <li><a href="index.html#about">Our Story</a></li>
+        <li><a href="index.html#stories">Client Stories</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="admin-dashboard.html" class="btn-outline">Admin Dashboard</a>
+      </div>
+    </div>
+  </nav>
+  <div class="dashboard-container">
+    <h1>Admin Dashboard</h1>
+    <div class="dashboard-nav">
+      <a href="#products" class="active">Products</a>
+      <a href="#users">Users</a>
+    </div>
+    <div class="section" id="products-section">
+      <h2>Manage Products</h2>
+      <div id="products-table"></div>
+      <h3>Add New Product</h3>
+      <form id="add-product-form">
+        <div class="form-group">
+          <label class="form-label">Name</label>
+          <input class="form-input" name="name" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Type</label>
+          <select class="form-select" name="type">
+            <option value="ring">Ring</option>
+            <option value="necklace">Necklace</option>
+            <option value="earring">Earring</option>
+            <option value="bracelet">Bracelet</option>
+            <option value="other">Other</option>
+          </select>
+          <div class="form-group">
+            <label class="form-label">Product Image</label>
+            <input class="form-input" name="image" type="file" accept="image/*">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Origin</label>
+          <select class="form-select" name="origin">
+            <option value="Japan">Japan</option>
+            <option value="Italy">Italy</option>
+            <option value="Saudi Arabia">Saudi Arabia</option>
+            <option value="Hong Kong">Hong Kong</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Materials</label>
+          <input class="form-input" name="materials">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Karat</label>
+          <input class="form-input" name="karat">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Weight</label>
+          <input class="form-input" name="weight">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Price</label>
+          <input class="form-input" name="price" type="number" min="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Status</label>
+          <select class="form-select" name="status">
+            <option value="available">Available</option>
+            <option value="sold">Sold</option>
+            <option value="reserved">Reserved</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Emoji</label>
+          <input class="form-input" name="emoji">
+        </div>
+        <button class="btn" type="submit">Add Product</button>
+      </form>
+    </div>
+    <div class="section" id="users-section">
+      <h2>Manage Users</h2>
+      <div id="users-table"></div>
+    </div>
+  </div>
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/admin-dashboard.js"></script>
+</body>
+</html>

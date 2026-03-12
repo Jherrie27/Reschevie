@@ -72,9 +72,17 @@ if ($method === 'GET') {
     $result = $stmt->get_result();
     $products = [];
 
-    while ($row = $result->fetch_assoc()) {
-        $products[] = $row;
-    }
+        while ($row = $result->fetch_assoc()) {
+            // Get primary image for this product
+            $imgStmt = $conn->prepare("SELECT p_image_url FROM product_images WHERE product_id = ? AND is_primary = 1 LIMIT 1");
+            $imgStmt->bind_param("i", $row['product_id']);
+            $imgStmt->execute();
+            $imgResult = $imgStmt->get_result();
+            $imgRow = $imgResult->fetch_assoc();
+            $row['product_image_url'] = $imgRow ? $imgRow['p_image_url'] : null;
+            $imgStmt->close();
+            $products[] = $row;
+        }
 
     $stmt->close();
     ob_clean();

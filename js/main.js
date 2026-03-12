@@ -210,7 +210,9 @@ function renderProductCard(p) {
     <div class="product-card" data-id="${id}">
       <div class="product-img">
         <div class="product-img-inner" style="background: linear-gradient(135deg, #0D0D0D, #1A1408)">
-          ${emoji}
+          ${p.product_image_url
+            ? `<img src="${p.product_image_url}" alt="${name}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">`
+            : emoji}
         </div>
         <span class="product-origin-badge">${origin}</span>
         <button class="product-wishlist ${wished ? 'active' : ''}">${wished ? '♥' : '♡'}</button>

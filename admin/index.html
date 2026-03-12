@@ -79,14 +79,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
   document.getElementById('admin-greeting').textContent = `Welcome back, ${session.fname}`;
-  document.getElementById('logout-btn').addEventListener('click', (e) => {
+  document.getElementById('logout-btn').addEventListener('click', async (e) => {
     e.preventDefault();
-    clearSession();
+    await logout();
     window.location.href = '../login.html';
   });
 
   const products   = await getProducts();
-  const users      = (await getUsers()).filter(u => u.role !== 'admin');
+  const users      = await getUsers();
   const inquiries  = await getInquiries();
   const newsletters = await getNewsletters();
   const available  = products.filter(p => (p.product_status ?? p.status) === 'available').length;

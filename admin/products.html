@@ -134,36 +134,49 @@
 
 <script src="../js/data.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+let _productsCache = [];
+
+document.addEventListener('DOMContentLoaded', async () => {
   const session = getSession();
   if (!session || session.role !== 'admin') { window.location.href = '../login.html'; return; }
-  document.getElementById('logout-btn').addEventListener('click', (e) => { e.preventDefault(); clearSession(); window.location.href = '../login.html'; });
+  document.getElementById('logout-btn').addEventListener('click', async (e) => { e.preventDefault(); await logout(); window.location.href = '../login.html'; });
 
-  renderTable();
+  await renderTable();
 
   document.getElementById('add-product-btn').addEventListener('click', openAddModal);
   document.getElementById('modal-close-btn').addEventListener('click', closeModal);
   document.getElementById('product-form-modal').addEventListener('click', (e) => { if (e.target === document.getElementById('product-form-modal')) closeModal(); });
-  document.getElementById('save-product-btn').addEventListener('click', saveProduct);
-  document.getElementById('product-search').addEventListener('input', renderTable);
+  document.getElementById('save-product-btn').addEventListener('click', handleSaveProduct);
+  document.getElementById('product-search').addEventListener('input', () => filterAndDisplay());
 });
 
-function renderTable() {
+async function renderTable() {
+  _productsCache = await getProducts();
+  filterAndDisplay();
+}
+
+function filterAndDisplay() {
   const query = document.getElementById('product-search')?.value.toLowerCase() || '';
-  let products = getProducts();
-  if (query) products = products.filter(p => p.name.toLowerCase().includes(query) || p.origin.toLowerCase().includes(query) || p.type.toLowerCase().includes(query));
+  let products = _productsCache;
+  if (query) products = products.filter(p =>
+    (p.product_name || '').toLowerCase().includes(query) ||
+    (p.product_origin || '').toLowerCase().includes(query) ||
+    (p.product_type || '').toLowerCase().includes(query)
+  );
   document.getElementById('product-count').textContent = `(${products.length})`;
+  const poa = p => p.product_price_poa == 1;
+  const priceDisplay = p => poa(p) ? 'POA' : (p.product_price ? `₱ ${Number(p.product_price).toLocaleString()}` : '—');
   document.getElementById('products-table').innerHTML = products.length
     ? products.map(p => `<tr>
-        <td><strong style="color:var(--white);">${p.emoji} ${p.name}</strong></td>
-        <td style="text-transform:capitalize;">${p.type}</td>
-        <td>${p.origin}</td>
-        <td>${p.karat}</td>
-        <td>${p.price}</td>
-        <td><span class="badge-status badge-${p.status}">${p.status}</span></td>
+        <td><strong style="color:var(--white);">${p.product_emoji || '💍'} ${p.product_name}</strong></td>
+        <td style="text-transform:capitalize;">${p.product_type}</td>
+        <td>${p.product_origin}</td>
+        <td>${p.product_karat || '—'}</td>
+        <td>${priceDisplay(p)}</td>
+        <td><span class="badge-status badge-${p.product_status}">${p.product_status}</span></td>
         <td>
-          <button class="action-btn action-edit" onclick="openEditModal(${p.id})">Edit</button>
-          <button class="action-btn action-delete" onclick="deleteProduct(${p.id})" style="margin-left:4px;">Delete</button>
+          <button class="action-btn action-edit" onclick="openEditModal(${p.product_id})">Edit</button>
+          <button class="action-btn action-delete" onclick="handleDeleteProduct(${p.product_id})" style="margin-left:4px;">Delete</button>
         </td>
       </tr>`).join('')
     : `<tr><td colspan="7" style="text-align:center;color:var(--gray-light);padding:32px;">No products found</td></tr>`;
@@ -182,68 +195,86 @@ function openAddModal() {
 }
 
 function openEditModal(id) {
-  const p = getProducts().find(x => x.id === id);
+  const p = _productsCache.find(x => x.product_id == id);
   if (!p) return;
   document.getElementById('modal-title').textContent = 'Edit Product';
-  document.getElementById('edit-id').value = id;
-  document.getElementById('p-name').value = p.name;
-  document.getElementById('p-type').value = p.type;
-  document.getElementById('p-origin').value = p.origin;
-  document.getElementById('p-karat').value = p.karat;
-  document.getElementById('p-weight').value = p.weight;
-  document.getElementById('p-materials').value = p.materials;
-  document.getElementById('p-price').value = p.price;
-  document.getElementById('p-description').value = p.description;
-  document.getElementById('p-emoji').value = p.emoji;
-  document.getElementById('p-status').value = p.status;
-  document.getElementById('p-featured').value = p.featured ? 'true' : 'false';
+  document.getElementById('edit-id').value = p.product_id;
+  document.getElementById('p-name').value = p.product_name || '';
+  document.getElementById('p-type').value = p.product_type || 'ring';
+  document.getElementById('p-origin').value = p.product_origin || 'Japan';
+  document.getElementById('p-karat').value = p.product_karat || '';
+  document.getElementById('p-weight').value = p.product_weight || '';
+  document.getElementById('p-materials').value = p.product_materials || '';
+  document.getElementById('p-price').value = p.product_price_poa == 1 ? 'POA' : (p.product_price || '');
+  document.getElementById('p-description').value = p.product_description || '';
+  document.getElementById('p-emoji').value = p.product_emoji || '';
+  document.getElementById('p-status').value = p.product_status || 'available';
+  document.getElementById('p-featured').value = p.product_featured == 1 ? 'true' : 'false';
   document.getElementById('form-err').style.display = 'none';
   document.getElementById('product-form-modal').classList.add('open');
 }
 
 function closeModal() { document.getElementById('product-form-modal').classList.remove('open'); }
 
-function saveProduct() {
+async function handleSaveProduct() {
   const errEl = document.getElementById('form-err');
   const name = document.getElementById('p-name').value.trim();
   if (!name) { errEl.textContent = 'Product name is required.'; errEl.style.display = 'block'; return; }
   errEl.style.display = 'none';
 
   const editId = document.getElementById('edit-id').value;
-  const products = getProducts();
+  const priceRaw = document.getElementById('p-price').value.trim();
+  const isPoa = !priceRaw || priceRaw.toUpperCase() === 'POA';
+
   const productData = {
-    name, type: document.getElementById('p-type').value,
-    origin: document.getElementById('p-origin').value,
-    karat: document.getElementById('p-karat').value,
-    weight: document.getElementById('p-weight').value,
-    materials: document.getElementById('p-materials').value,
-    price: document.getElementById('p-price').value || 'POA',
-    priceNum: 0,
-    description: document.getElementById('p-description').value,
-    emoji: document.getElementById('p-emoji').value || '💍',
-    status: document.getElementById('p-status').value,
-    featured: document.getElementById('p-featured').value === 'true'
+    product_name: name,
+    product_type: document.getElementById('p-type').value,
+    product_origin: document.getElementById('p-origin').value,
+    product_karat: document.getElementById('p-karat').value,
+    product_weight: document.getElementById('p-weight').value,
+    product_materials: document.getElementById('p-materials').value,
+    product_price: isPoa ? null : parseFloat(priceRaw.replace(/[₱,\s]/g, '')) || 0,
+    product_price_poa: isPoa ? 1 : 0,
+    product_description: document.getElementById('p-description').value,
+    product_emoji: document.getElementById('p-emoji').value || '💍',
+    product_status: document.getElementById('p-status').value,
+    product_featured: document.getElementById('p-featured').value === 'true' ? 1 : 0
   };
 
+  const btn = document.getElementById('save-product-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+
+  let result;
   if (editId) {
-    const idx = products.findIndex(p => p.id == editId);
-    if (idx > -1) products[idx] = { ...products[idx], ...productData };
+    productData.product_id = parseInt(editId);
+    result = await updateProduct(productData);
   } else {
-    productData.id = Date.now();
-    products.push(productData);
+    result = await addProduct(productData);
   }
-  saveProducts(products);
-  closeModal();
-  renderTable();
-  showToast(editId ? 'Product updated!' : 'Product added!');
+
+  btn.disabled = false;
+  btn.textContent = 'Save Product';
+
+  if (result && result.success) {
+    closeModal();
+    await renderTable();
+    showToast(editId ? 'Product updated!' : 'Product added!');
+  } else {
+    errEl.textContent = result?.message || 'Failed to save product. Please try again.';
+    errEl.style.display = 'block';
+  }
 }
 
-function deleteProduct(id) {
+async function handleDeleteProduct(id) {
   if (!confirm('Are you sure you want to delete this product?')) return;
-  const products = getProducts().filter(p => p.id !== id);
-  saveProducts(products);
-  renderTable();
-  showToast('Product deleted.');
+  const result = await deleteProduct(id);
+  if (result && result.success) {
+    await renderTable();
+    showToast('Product deleted.');
+  } else {
+    showToast(result?.message || 'Failed to delete product.');
+  }
 }
 </script>
 </body>

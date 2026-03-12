@@ -213,6 +213,15 @@ async function updateInquiryStatus(inquiryId, status) {
   return await _apiPut('api/inquiries.php', { inquiry_id: inquiryId, status });
 }
 
+/**
+ * Delete an inquiry by ID (admin only).
+ * @param {number} inquiryId
+ * @returns {Promise<{success: boolean}>}
+ */
+async function deleteInquiry(inquiryId) {
+  return await _apiDelete(`api/inquiries.php?id=${inquiryId}`);
+}
+
 // ===========================
 // STORIES
 // ===========================
@@ -357,6 +366,21 @@ function isWishlisted(productId) { return getWishlist().includes(productId); }
 // ===========================
 // TOAST NOTIFICATION (UI)
 // ===========================
+
+// ===========================
+// DATE FORMATTING
+// ===========================
+
+/**
+ * Format a date string for display.
+ * @param {string} str
+ * @returns {string}
+ */
+function formatDate(str) {
+  try {
+    return new Date(str).toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' });
+  } catch(e) { return str; }
+}
 
 function showToast(msg) {
   let t = document.getElementById('toast');

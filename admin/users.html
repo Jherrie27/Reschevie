@@ -41,32 +41,38 @@
 </div>
 <script src="../js/data.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const session = getSession();
   if (!session || session.role !== 'admin') { window.location.href = '../login.html'; return; }
-  document.getElementById('logout-btn').addEventListener('click', (e) => { e.preventDefault(); clearSession(); window.location.href = '../login.html'; });
-  renderTable();
+  document.getElementById('logout-btn').addEventListener('click', async (e) => { e.preventDefault(); await logout(); window.location.href = '../login.html'; });
+  await renderTable();
 });
-function renderTable() {
-  const users = getUsers().filter(u => u.role !== 'admin');
+
+async function renderTable() {
+  const users = await getUsers();
   document.getElementById('user-count').textContent = `(${users.length})`;
   document.getElementById('users-table').innerHTML = users.length
     ? users.map(u => `<tr>
-        <td><strong style="color:var(--white);">${u.fname} ${u.lname}</strong></td>
-        <td>${u.email}</td>
-        <td>@${u.username}</td>
-        <td>${u.contact||'—'}</td>
-        <td><span class="badge-status badge-available">${u.role}</span></td>
+        <td><strong style="color:var(--white);">${u.user_fname} ${u.user_lname}</strong></td>
+        <td>${u.user_email}</td>
+        <td>@${u.user_username}</td>
+        <td>${u.user_contact||'—'}</td>
+        <td><span class="badge-status badge-available">user</span></td>
         <td>${formatDate(u.created_at)}</td>
-        <td><button class="action-btn action-delete" onclick="deleteUser(${u.id})">Delete</button></td>
+        <td><button class="action-btn action-delete" onclick="handleDeleteUser(${u.user_id})">Delete</button></td>
       </tr>`).join('')
     : `<tr><td colspan="7" style="text-align:center;color:var(--gray-light);padding:32px;">No users registered yet</td></tr>`;
 }
-function deleteUser(id) {
+
+async function handleDeleteUser(id) {
   if (!confirm('Delete this user? This cannot be undone.')) return;
-  saveUsers(getUsers().filter(u => u.id !== id));
-  renderTable();
-  showToast('User deleted.');
+  const result = await deleteUser(id);
+  if (result && result.success) {
+    await renderTable();
+    showToast('User deleted.');
+  } else {
+    showToast(result?.message || 'Failed to delete user.');
+  }
 }
 </script>
 </body>

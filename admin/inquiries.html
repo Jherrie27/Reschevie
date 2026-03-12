@@ -57,70 +57,83 @@
 
 <script src="../js/data.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+let _inquiriesCache = [];
+let _productsCache = [];
+
+document.addEventListener('DOMContentLoaded', async () => {
   const session = getSession();
   if (!session || session.role !== 'admin') { window.location.href = '../login.html'; return; }
-  document.getElementById('logout-btn').addEventListener('click', (e) => { e.preventDefault(); clearSession(); window.location.href = '../login.html'; });
-  renderTable();
+  document.getElementById('logout-btn').addEventListener('click', async (e) => { e.preventDefault(); await logout(); window.location.href = '../login.html'; });
+  await renderTable();
 });
 
-function renderTable() {
-  const inquiries = getInquiries().reverse();
-  document.getElementById('inq-count').textContent = `(${inquiries.length})`;
-  document.getElementById('inq-table').innerHTML = inquiries.length
-    ? inquiries.map(i => `<tr>
+async function renderTable() {
+  _inquiriesCache = await getInquiries();
+  _productsCache = await getProducts();
+  document.getElementById('inq-count').textContent = `(${_inquiriesCache.length})`;
+  document.getElementById('inq-table').innerHTML = _inquiriesCache.length
+    ? _inquiriesCache.map(i => `<tr>
         <td><strong style="color:var(--white);">${i.fname} ${i.lname}</strong></td>
         <td>${i.email}</td>
         <td>${i.phone || '—'}</td>
         <td>${i.items?.length || 0} item(s)</td>
-        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${i.notes || '—'}</td>
+        <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${i.special_requests || '—'}</td>
         <td>${formatDate(i.submitted_at)}</td>
         <td>
-          <select onchange="updateStatus(${i.id}, this.value)" class="form-input" style="padding:4px 8px; font-size:11px; width:auto;">
+          <select onchange="handleUpdateStatus(${i.inquiry_id}, this.value)" class="form-input" style="padding:4px 8px; font-size:11px; width:auto;">
             <option value="pending" ${i.status==='pending'?'selected':''}>Pending</option>
             <option value="in-progress" ${i.status==='in-progress'?'selected':''}>In Progress</option>
             <option value="completed" ${i.status==='completed'?'selected':''}>Completed</option>
+            <option value="cancelled" ${i.status==='cancelled'?'selected':''}>Cancelled</option>
           </select>
         </td>
         <td>
-          <button class="action-btn action-edit" onclick="viewDetail(${i.id})">View</button>
-          <button class="action-btn action-delete" onclick="deleteInquiry(${i.id})" style="margin-left:4px;">Delete</button>
+          <button class="action-btn action-edit" onclick="viewDetail(${i.inquiry_id})">View</button>
+          <button class="action-btn action-delete" onclick="handleDeleteInquiry(${i.inquiry_id})" style="margin-left:4px;">Delete</button>
         </td>
       </tr>`).join('')
     : `<tr><td colspan="8" style="text-align:center;color:var(--gray-light);padding:32px;">No inquiries yet</td></tr>`;
 }
 
-function updateStatus(id, status) {
-  const inquiries = getInquiries();
-  const idx = inquiries.findIndex(i => i.id === id);
-  if (idx > -1) { inquiries[idx].status = status; saveInquiries(inquiries); }
+async function handleUpdateStatus(id, status) {
+  const result = await updateInquiryStatus(id, status);
+  if (result && result.success) {
+    showToast('Status updated.');
+  } else {
+    showToast(result?.message || 'Failed to update status.');
+    await renderTable();
+  }
 }
 
-function deleteInquiry(id) {
+async function handleDeleteInquiry(id) {
   if (!confirm('Delete this inquiry?')) return;
-  saveInquiries(getInquiries().filter(i => i.id !== id));
-  renderTable();
+  const result = await deleteInquiry(id);
+  if (result && result.success) {
+    await renderTable();
+    showToast('Inquiry deleted.');
+  } else {
+    showToast(result?.message || 'Failed to delete inquiry.');
+  }
 }
 
 function viewDetail(id) {
-  const i = getInquiries().find(x => x.id === id);
+  const i = _inquiriesCache.find(x => x.inquiry_id == id);
   if (!i) return;
-  const products = getProducts();
-  const items = (i.items || []).map(pid => products.find(p => p.id === pid)).filter(Boolean);
+  const items = i.items || [];
   document.getElementById('inq-detail').innerHTML = `
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
       <div><label class="form-label">Name</label><p>${i.fname} ${i.lname}</p></div>
       <div><label class="form-label">Email</label><p>${i.email}</p></div>
       <div><label class="form-label">Phone</label><p>${i.phone||'Not provided'}</p></div>
-      <div><label class="form-label">Preferred Contact</label><p style="text-transform:capitalize;">${i.contactPref||'—'}</p></div>
+      <div><label class="form-label">Preferred Contact</label><p style="text-transform:capitalize;">${i.contact_pref||'—'}</p></div>
       <div><label class="form-label">Submitted</label><p>${formatDate(i.submitted_at)}</p></div>
       <div><label class="form-label">Status</label><p style="text-transform:capitalize;">${i.status}</p></div>
     </div>
-    ${i.notes ? `<div style="margin-bottom:20px;"><label class="form-label">Special Requests</label><p style="font-size:13px;color:var(--white-dim);">${i.notes}</p></div>` : ''}
+    ${i.special_requests ? `<div style="margin-bottom:20px;"><label class="form-label">Special Requests</label><p style="font-size:13px;color:var(--white-dim);">${i.special_requests}</p></div>` : ''}
     <label class="form-label">Inquiry Items (${items.length})</label>
     ${items.map(p => `<div class="inquiry-item" style="margin-top:8px;padding:16px;background:var(--dark-3);">
-      <div style="font-size:24px;">${p.emoji}</div>
-      <div><div style="font-weight:600;color:var(--white);">${p.name}</div><div style="font-size:12px;color:var(--gray-light);">${p.type} · ${p.origin} · ${p.price}</div></div>
+      <div style="font-size:24px;">${p.product_emoji || '💍'}</div>
+      <div><div style="font-weight:600;color:var(--white);">${p.product_name}</div><div style="font-size:12px;color:var(--gray-light);">${p.product_type || ''}</div></div>
     </div>`).join('') || '<p style="color:var(--gray-light);font-size:13px;">No items</p>'}
   `;
   document.getElementById('inq-modal').classList.add('open');

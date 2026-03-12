@@ -41,29 +41,37 @@
 </div>
 <script src="../js/data.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+let _nlCache = [];
+
+document.addEventListener('DOMContentLoaded', async () => {
   const session = getSession();
   if (!session || session.role !== 'admin') { window.location.href = '../login.html'; return; }
-  document.getElementById('logout-btn').addEventListener('click', (e) => { e.preventDefault(); clearSession(); window.location.href = '../login.html'; });
-  renderTable();
+  document.getElementById('logout-btn').addEventListener('click', async (e) => { e.preventDefault(); await logout(); window.location.href = '../login.html'; });
+  await renderTable();
 });
-function renderTable() {
-  const nl = getNewsletters();
-  document.getElementById('nl-count').textContent = `(${nl.length})`;
-  document.getElementById('nl-table').innerHTML = nl.length
-    ? nl.map((n, i) => `<tr>
+
+async function renderTable() {
+  _nlCache = await getNewsletters();
+  document.getElementById('nl-count').textContent = `(${_nlCache.length})`;
+  document.getElementById('nl-table').innerHTML = _nlCache.length
+    ? _nlCache.map((n, i) => `<tr>
         <td style="color:var(--gold);">${i+1}</td>
-        <td><strong style="color:var(--white);">${n.email}</strong></td>
-        <td>${formatDate(n.subbed_at)}</td>
-        <td><button class="action-btn action-delete" onclick="deleteNL(${n.id})">Remove</button></td>
+        <td><strong style="color:var(--white);">${n.newsletter_email}</strong></td>
+        <td>${formatDate(n.newsletter_subbed_at)}</td>
+        <td><button class="action-btn action-delete" onclick="handleDeleteNL('${n.newsletter_email}')">Remove</button></td>
       </tr>`).join('')
     : `<tr><td colspan="4" style="text-align:center;color:var(--gray-light);padding:32px;">No subscribers yet</td></tr>`;
 }
-function deleteNL(id) {
+
+async function handleDeleteNL(email) {
   if (!confirm('Remove this subscriber?')) return;
-  saveNewsletters(getNewsletters().filter(n => n.id !== id));
-  renderTable();
-  showToast('Subscriber removed.');
+  const result = await unsubscribeNewsletter(email);
+  if (result && result.success) {
+    await renderTable();
+    showToast('Subscriber removed.');
+  } else {
+    showToast(result?.message || 'Failed to remove subscriber.');
+  }
 }
 </script>
 </body>

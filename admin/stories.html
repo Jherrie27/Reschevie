@@ -56,28 +56,30 @@
 
 <script src="../js/data.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+let _storiesCache = [];
+
+document.addEventListener('DOMContentLoaded', async () => {
   const session = getSession();
   if (!session || session.role !== 'admin') { window.location.href = '../login.html'; return; }
-  document.getElementById('logout-btn').addEventListener('click', (e) => { e.preventDefault(); clearSession(); window.location.href = '../login.html'; });
+  document.getElementById('logout-btn').addEventListener('click', async (e) => { e.preventDefault(); await logout(); window.location.href = '../login.html'; });
   document.getElementById('add-story-btn').addEventListener('click', openAdd);
-  document.getElementById('save-story-btn').addEventListener('click', saveStory);
+  document.getElementById('save-story-btn').addEventListener('click', handleSaveStory);
   document.getElementById('story-modal').addEventListener('click', (e) => { if (e.target === document.getElementById('story-modal')) document.getElementById('story-modal').classList.remove('open'); });
-  renderTable();
+  await renderTable();
   document.getElementById('s-date').value = new Date().toISOString().split('T')[0];
 });
 
-function renderTable() {
-  const stories = getStories();
-  document.getElementById('stories-table').innerHTML = stories.length
-    ? stories.map(s => `<tr>
-        <td><strong style="color:var(--white);">${s.name}</strong></td>
-        <td>${s.author}</td>
-        <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${s.description}</td>
-        <td>${formatDate(s.date_posted)}</td>
+async function renderTable() {
+  _storiesCache = await getStories();
+  document.getElementById('stories-table').innerHTML = _storiesCache.length
+    ? _storiesCache.map(s => `<tr>
+        <td><strong style="color:var(--white);">${s.story_name}</strong></td>
+        <td>${s.story_author}</td>
+        <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${s.story_description}</td>
+        <td>${formatDate(s.story_date_posted)}</td>
         <td>
-          <button class="action-btn action-edit" onclick="openEdit(${s.id})">Edit</button>
-          <button class="action-btn action-delete" onclick="deleteStory(${s.id})" style="margin-left:4px;">Delete</button>
+          <button class="action-btn action-edit" onclick="openEdit(${s.story_id})">Edit</button>
+          <button class="action-btn action-delete" onclick="handleDeleteStory(${s.story_id})" style="margin-left:4px;">Delete</button>
         </td>
       </tr>`).join('')
     : `<tr><td colspan="5" style="text-align:center;color:var(--gray-light);padding:32px;">No stories yet</td></tr>`;
@@ -92,46 +94,68 @@ function openAdd() {
 }
 
 function openEdit(id) {
-  const s = getStories().find(x => x.id === id);
+  const s = _storiesCache.find(x => x.story_id == id);
   if (!s) return;
   document.getElementById('story-modal-title').textContent = 'Edit Story';
-  document.getElementById('s-id').value = id;
-  document.getElementById('s-name').value = s.name;
-  document.getElementById('s-author').value = s.author;
-  document.getElementById('s-desc').value = s.description;
-  document.getElementById('s-date').value = s.date_posted;
+  document.getElementById('s-id').value = s.story_id;
+  document.getElementById('s-name').value = s.story_name;
+  document.getElementById('s-author').value = s.story_author;
+  document.getElementById('s-desc').value = s.story_description;
+  document.getElementById('s-date').value = s.story_date_posted;
   document.getElementById('s-err').style.display = 'none';
   document.getElementById('story-modal').classList.add('open');
 }
 
-function saveStory() {
+async function handleSaveStory() {
   const errEl = document.getElementById('s-err');
   const name = document.getElementById('s-name').value.trim();
   const author = document.getElementById('s-author').value.trim();
   const desc = document.getElementById('s-desc').value.trim();
   if (!name || !author || !desc) { errEl.textContent = 'Please fill in all required fields.'; errEl.style.display = 'block'; return; }
   errEl.style.display = 'none';
+
   const editId = document.getElementById('s-id').value;
-  const stories = getStories();
-  const data = { name, author, description: desc, date_posted: document.getElementById('s-date').value };
+  const storyData = {
+    story_name: name,
+    story_author: author,
+    story_description: desc,
+    story_date_posted: document.getElementById('s-date').value
+  };
+
+  const btn = document.getElementById('save-story-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+
+  let result;
   if (editId) {
-    const idx = stories.findIndex(s => s.id == editId);
-    if (idx > -1) stories[idx] = { ...stories[idx], ...data };
+    storyData.story_id = parseInt(editId);
+    result = await updateStory(storyData);
   } else {
-    data.id = Date.now();
-    stories.push(data);
+    result = await addStory(storyData);
   }
-  saveStories(stories);
-  document.getElementById('story-modal').classList.remove('open');
-  renderTable();
-  showToast(editId ? 'Story updated!' : 'Story added!');
+
+  btn.disabled = false;
+  btn.textContent = 'Save Story';
+
+  if (result && result.success) {
+    document.getElementById('story-modal').classList.remove('open');
+    await renderTable();
+    showToast(editId ? 'Story updated!' : 'Story added!');
+  } else {
+    errEl.textContent = result?.message || 'Failed to save story. Please try again.';
+    errEl.style.display = 'block';
+  }
 }
 
-function deleteStory(id) {
+async function handleDeleteStory(id) {
   if (!confirm('Delete this story?')) return;
-  saveStories(getStories().filter(s => s.id !== id));
-  renderTable();
-  showToast('Story deleted.');
+  const result = await deleteStory(id);
+  if (result && result.success) {
+    await renderTable();
+    showToast('Story deleted.');
+  } else {
+    showToast(result?.message || 'Failed to delete story.');
+  }
 }
 </script>
 </body>

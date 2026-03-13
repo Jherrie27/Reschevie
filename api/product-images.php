@@ -72,20 +72,15 @@ if ($method === 'POST') {
         exit;
     }
 
-    $filename    = 'product_' . uniqid('', true) . '.' . $ext;
-    $upload_dir  = __DIR__ . '/../resources/';
-    $target      = $upload_dir . $filename;
-
-    if (!is_dir($upload_dir)) {
-        mkdir($upload_dir, 0755, true);
-    }
-
-    if (!move_uploaded_file($_FILES['image']['tmp_name'], $target)) {
-        echo json_encode(['success' => false, 'message' => 'Failed to save image file. Check folder permissions.']);
+    $image_data = file_get_contents($_FILES['image']['tmp_name']);
+    if ($image_data === false) {
+        echo json_encode(['success' => false, 'message' => 'Failed to read uploaded file']);
         exit;
     }
 
-    $image_url  = 'resources/' . $filename;
+    $mime_map = ['jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png', 'webp' => 'image/webp'];
+    $mime = $mime_map[$ext] ?? 'image/jpeg';
+
     $is_primary = (int)($_POST['is_primary'] ?? 0);
 
     // If flagged as primary, clear existing primary for this product
@@ -97,14 +92,14 @@ if ($method === 'POST') {
     }
 
     $stmt = $conn->prepare(
-        "INSERT INTO product_images (product_id, p_image_url, is_primary) VALUES (?, ?, ?)"
+        "INSERT INTO product_images (product_id, p_image_data, p_image_mime, is_primary) VALUES (?, ?, ?, ?)"
     );
-    $stmt->bind_param("isi", $product_id, $image_url, $is_primary);
+    $stmt->bind_param("issi", $product_id, $image_data, $mime, $is_primary);
 
     if ($stmt->execute()) {
         $id = $conn->insert_id;
         $stmt->close();
-        echo json_encode(['success' => true, 'id' => $id, 'url' => $image_url]);
+        echo json_encode(['success' => true, 'id' => $id]);
     } else {
         $stmt->close();
         echo json_encode(['success' => false, 'message' => 'Failed to save image record']);

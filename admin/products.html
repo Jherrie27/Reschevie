@@ -359,9 +359,9 @@
         return;
       }
       listEl.innerHTML = images.map(img => {
-        const encoded = img.p_image_url.split('/').map(s => encodeURIComponent(s)).join('/');
+        const imgSrc = `${_API_BASE}/api/image.php?id=${img.p_image_id}`;
         return `<div style="position:relative;width:120px;">
-          <img src="${_API_BASE}/${encoded}" alt="product" style="width:120px;height:90px;object-fit:cover;border-radius:8px;border:1px solid rgba(197,160,112,${img.is_primary ? '0.7' : '0.2'});">
+          <img src="${imgSrc}" alt="product" style="width:120px;height:90px;object-fit:cover;border-radius:8px;border:1px solid rgba(197,160,112,${img.is_primary ? '0.7' : '0.2'});">
           ${img.is_primary ? '<span style="position:absolute;top:4px;left:4px;background:var(--gold);color:#000;font-size:9px;padding:2px 5px;border-radius:3px;">PRIMARY</span>' : ''}
           <button onclick="handleDeleteImage(${img.p_image_id})" style="position:absolute;top:4px;right:4px;background:rgba(160,0,0,0.8);border:none;color:#fff;border-radius:3px;cursor:pointer;padding:2px 5px;font-size:10px;">✕</button>
         </div>`;

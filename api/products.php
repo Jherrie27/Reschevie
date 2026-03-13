@@ -75,13 +75,13 @@ if ($method === 'GET') {
     $products = [];
 
         while ($row = $result->fetch_assoc()) {
-            // Get primary image for this product
-            $imgStmt = $conn->prepare("SELECT p_image_url FROM product_images WHERE product_id = ? AND is_primary = 1 LIMIT 1");
+            // Get primary image ID — served via api/image.php?id=X (stored as BLOB in DB)
+            $imgStmt = $conn->prepare("SELECT p_image_id FROM product_images WHERE product_id = ? ORDER BY is_primary DESC LIMIT 1");
             $imgStmt->bind_param("i", $row['product_id']);
             $imgStmt->execute();
             $imgResult = $imgStmt->get_result();
             $imgRow = $imgResult->fetch_assoc();
-            $row['product_image_url'] = $imgRow ? $imgRow['p_image_url'] : null;
+            $row['product_image_url'] = $imgRow ? 'api/image.php?id=' . $imgRow['p_image_id'] : null;
             $imgStmt->close();
             $products[] = $row;
         }

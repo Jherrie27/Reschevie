@@ -211,7 +211,7 @@ function renderProductCard(p) {
       <div class="product-img">
         <div class="product-img-inner" style="background: linear-gradient(135deg, #0D0D0D, #1A1408)">
           ${p.product_image_url
-            ? `<img src="${p.product_image_url}" alt="${name}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">`
+            ? `<img src="${p.product_image_url.split('/').map(s => encodeURIComponent(s)).join('/')}" alt="${name}" style="width:100%;height:100%;object-fit:cover;border-radius:12px;">`
             : emoji}
         </div>
         <span class="product-origin-badge">${origin}</span>

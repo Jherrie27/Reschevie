@@ -4,6 +4,8 @@
 // ============================================================
 
 ob_start();
+ini_set('display_errors', 0);
+error_reporting(0);
 session_start();
 include 'db_connect.php';
 
@@ -165,10 +167,12 @@ if ($method === 'POST') {
     if ($stmt->execute()) {
         $id = $conn->insert_id;
         $stmt->close();
+        ob_clean();
         echo json_encode(['success' => true, 'id' => $id]);
     } else {
         error_log('[RESCHEVIE] Product insert error: ' . $conn->error);
         $stmt->close();
+        ob_clean();
         echo json_encode(['success' => false, 'message' => 'Failed to add product']);
     }
     exit;
@@ -257,10 +261,12 @@ if ($method === 'PUT') {
 
     if ($stmt->execute()) {
         $stmt->close();
+        ob_clean();
         echo json_encode(['success' => true]);
     } else {
         error_log('[RESCHEVIE] Product update error: ' . $conn->error);
         $stmt->close();
+        ob_clean();
         echo json_encode(['success' => false, 'message' => 'Failed to update product']);
     }
     exit;
@@ -296,10 +302,12 @@ if ($method === 'DELETE') {
 
     if ($stmt->execute()) {
         $stmt->close();
+        ob_clean();
         echo json_encode(['success' => true]);
     } else {
         error_log('[RESCHEVIE] Product delete error: ' . $conn->error);
         $stmt->close();
+        ob_clean();
         echo json_encode(['success' => false, 'message' => 'Failed to delete product']);
     }
     exit;

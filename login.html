@@ -105,7 +105,7 @@
     // Redirect immediately if already logged in
     const existingSession = getSession();
     if (existingSession) {
-      window.location.href = existingSession.role === 'admin' ? 'admin-dashboard.html' : 'index.html';
+      window.location.href = existingSession.role === 'admin' ? 'admin/index.html' : 'index.html';
     }
 
     async function handleLogin() {
@@ -133,7 +133,7 @@
 
         if (result.success) {
           // Session is set inside login() in data.js
-          window.location.href = result.role === 'admin' ? 'admin-dashboard.html' : 'index.html';
+          window.location.href = result.role === 'admin' ? 'admin/index.html' : 'index.html';
         } else {
           errEl.textContent = result.message || 'Invalid email or password.';
           errEl.style.display = 'block';

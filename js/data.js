@@ -3,13 +3,18 @@
 // All storage backed by PHP/MySQL API
 // ===========================
 
+// Base path for all API calls.
+// Set this to the subdirectory your project lives in, e.g. '/Reschevie'.
+// If served from the domain root use an empty string ''.
+const _API_BASE = '/Reschevie';
+
 // ===========================
 // INTERNAL FETCH HELPERS
 // ===========================
 
 async function _apiGet(endpoint) {
   try {
-    const res = await fetch(endpoint, { credentials: 'include' });
+    const res = await fetch(_API_BASE + endpoint, { credentials: 'include' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.json();
   } catch (e) {
@@ -20,7 +25,7 @@ async function _apiGet(endpoint) {
 
 async function _apiPost(endpoint, data) {
   try {
-    const res = await fetch(endpoint, {
+    const res = await fetch(_API_BASE + endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -36,7 +41,7 @@ async function _apiPost(endpoint, data) {
 
 async function _apiPut(endpoint, data) {
   try {
-    const res = await fetch(endpoint, {
+    const res = await fetch(_API_BASE + endpoint, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
@@ -52,7 +57,7 @@ async function _apiPut(endpoint, data) {
 
 async function _apiDelete(endpoint) {
   try {
-    const res = await fetch(endpoint, {
+    const res = await fetch(_API_BASE + endpoint, {
       method: 'DELETE',
       credentials: 'include'
     });
@@ -80,7 +85,7 @@ async function login(email, password) {
   form.append('email', email);
   form.append('password', password);
   try {
-    const res = await fetch('/api/auth.php', {
+    const res = await fetch(_API_BASE + '/api/auth.php', {
       method: 'POST',
       credentials: 'include',
       body: form
@@ -104,7 +109,7 @@ async function register(userData) {
   form.append('action', 'register');
   Object.entries(userData).forEach(([k, v]) => form.append(k, v));
   try {
-    const res = await fetch('/api/auth.php', {
+    const res = await fetch(_API_BASE + '/api/auth.php', {
       method: 'POST',
       credentials: 'include',
       body: form
@@ -125,7 +130,7 @@ async function logout() {
   const form = new FormData();
   form.append('action', 'logout');
   try {
-    const res = await fetch('/api/auth.php', {
+    const res = await fetch(_API_BASE + '/api/auth.php', {
       method: 'POST',
       credentials: 'include',
       body: form
@@ -380,6 +385,53 @@ function formatDate(str) {
   try {
     return new Date(str).toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' });
   } catch (e) { return str; }
+}
+
+// ===========================
+// PRODUCT IMAGES (admin)
+// ===========================
+
+async function getProductImages(productId) {
+  return (await _apiGet(`/api/product-images.php?product_id=${productId}`)) ?? [];
+}
+
+async function addProductImage(formData) {
+  try {
+    const res = await fetch(_API_BASE + '/api/product-images.php', {
+      method: 'POST',
+      credentials: 'include',
+      body: formData
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch (e) {
+    console.error('[RESCHEVIE] addProductImage failed:', e);
+    return { success: false, message: e.message };
+  }
+}
+
+async function deleteProductImage(imageId) {
+  return await _apiDelete(`/api/product-images.php?id=${imageId}`);
+}
+
+// ===========================
+// ADMINS (admin)
+// ===========================
+
+async function getAdmins() {
+  return (await _apiGet('/api/admins.php')) ?? [];
+}
+
+async function addAdmin(adminData) {
+  return await _apiPost('/api/admins.php', adminData);
+}
+
+async function updateAdminAccount(adminData) {
+  return await _apiPut('/api/admins.php', adminData);
+}
+
+async function deleteAdmin(adminId) {
+  return await _apiDelete(`/api/admins.php?id=${adminId}`);
 }
 
 function showToast(msg) {

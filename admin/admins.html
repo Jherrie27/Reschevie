@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admins — Reschevie Admin</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../css/main.css">
+</head>
+
+<body>
+  <div class="admin-layout">
+    <aside class="admin-sidebar">
+      <div class="admin-sidebar-logo">
+        <a href="../index.html" class="logo"><span class="logo-r">R</span>eschevie</a>
+        <span>Admin Panel</span>
+      </div>
+      <nav class="admin-nav">
+        <a href="index.html" class="admin-nav-item"><span class="admin-nav-icon">📊</span> Dashboard</a>
+        <a href="products.html" class="admin-nav-item"><span class="admin-nav-icon">💍</span> Products</a>
+        <a href="inquiries.html" class="admin-nav-item"><span class="admin-nav-icon">📩</span> Inquiries</a>
+        <a href="users.html" class="admin-nav-item"><span class="admin-nav-icon">👤</span> Users</a>
+        <a href="stories.html" class="admin-nav-item"><span class="admin-nav-icon">💬</span> Client Stories</a>
+        <a href="newsletters.html" class="admin-nav-item"><span class="admin-nav-icon">✉️</span> Newsletters</a>
+        <a href="admins.html" class="admin-nav-item active"><span class="admin-nav-icon">🔑</span> Admins</a>
+        <div style="height:1px; background:rgba(197,160,112,0.1); margin:16px 0;"></div>
+        <a href="../index.html" class="admin-nav-item"><span class="admin-nav-icon">🌐</span> View Site</a>
+        <a href="#" class="admin-nav-item" id="logout-btn"><span class="admin-nav-icon">🚪</span> Sign Out</a>
+      </nav>
+    </aside>
+
+    <main class="admin-main">
+      <div class="admin-header">
+        <h1>Admin Accounts</h1>
+        <button class="btn-gold" id="add-admin-btn">+ Add Admin</button>
+      </div>
+
+      <div class="admin-table-wrap">
+        <div class="admin-table-header">
+          <h3>All Admins <span id="admin-count"
+              style="font-size:14px;color:var(--gray-light);font-family:var(--font-sans);"></span></h3>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="admins-table"></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <!-- Admin Form Modal -->
+  <div class="admin-modal-overlay" id="admin-form-modal">
+    <div class="admin-modal">
+      <button class="modal-close" id="admin-modal-close">✕</button>
+      <h2 id="admin-modal-title">Add Admin</h2>
+      <input type="hidden" id="a-id">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">First Name *</label>
+          <input type="text" id="a-fname" class="form-input" placeholder="First name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name *</label>
+          <input type="text" id="a-lname" class="form-input" placeholder="Last name">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address *</label>
+        <input type="email" id="a-email" class="form-input" placeholder="admin@reschevie.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label" id="a-pass-label">Password * (min 8 characters)</label>
+        <input type="password" id="a-password" class="form-input" placeholder="••••••••">
+      </div>
+      <div id="a-err" class="form-error" style="display:none;margin-bottom:12px;"></div>
+      <button class="btn-gold" style="width:100%;margin-top:8px;" id="save-admin-btn">Save Admin</button>
+    </div>
+  </div>
+
+  <script src="../js/data.js"></script>
+  <script>
+    let _adminsCache = [];
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const session = getSession();
+      if (!session || session.role !== 'admin') { window.location.href = '../login.html'; return; }
+      document.getElementById('logout-btn').addEventListener('click', async (e) => { e.preventDefault(); await logout(); window.location.href = '../login.html'; });
+      document.getElementById('add-admin-btn').addEventListener('click', openAdd);
+      document.getElementById('admin-modal-close').addEventListener('click', closeModal);
+      document.getElementById('admin-form-modal').addEventListener('click', (e) => { if (e.target === document.getElementById('admin-form-modal')) closeModal(); });
+      document.getElementById('save-admin-btn').addEventListener('click', handleSave);
+      await renderTable();
+    });
+
+    async function renderTable() {
+      _adminsCache = await getAdmins();
+      document.getElementById('admin-count').textContent = `(${_adminsCache.length})`;
+      document.getElementById('admins-table').innerHTML = _adminsCache.length
+        ? _adminsCache.map(a => `<tr>
+        <td><strong style="color:var(--white);">${a.admin_fname} ${a.admin_lname}</strong></td>
+        <td>${a.admin_email}</td>
+        <td>${formatDate(a.created_at)}</td>
+        <td>
+          <button class="action-btn action-edit" onclick="openEdit(${a.admin_id})">Edit</button>
+          <button class="action-btn action-delete" onclick="handleDelete(${a.admin_id})" style="margin-left:4px;">Delete</button>
+        </td>
+      </tr>`).join('')
+        : `<tr><td colspan="4" style="text-align:center;color:var(--gray-light);padding:32px;">No admin accounts found</td></tr>`;
+    }
+
+    function openAdd() {
+      document.getElementById('admin-modal-title').textContent = 'Add Admin';
+      document.getElementById('a-id').value = '';
+      document.getElementById('a-fname').value = '';
+      document.getElementById('a-lname').value = '';
+      document.getElementById('a-email').value = '';
+      document.getElementById('a-password').value = '';
+      document.getElementById('a-pass-label').textContent = 'Password * (min 8 characters)';
+      document.getElementById('a-err').style.display = 'none';
+      document.getElementById('admin-form-modal').classList.add('open');
+    }
+
+    function openEdit(id) {
+      const a = _adminsCache.find(x => x.admin_id == id);
+      if (!a) return;
+      document.getElementById('admin-modal-title').textContent = 'Edit Admin';
+      document.getElementById('a-id').value = a.admin_id;
+      document.getElementById('a-fname').value = a.admin_fname;
+      document.getElementById('a-lname').value = a.admin_lname;
+      document.getElementById('a-email').value = a.admin_email;
+      document.getElementById('a-password').value = '';
+      document.getElementById('a-pass-label').textContent = 'New Password (leave blank to keep current)';
+      document.getElementById('a-err').style.display = 'none';
+      document.getElementById('admin-form-modal').classList.add('open');
+    }
+
+    function closeModal() { document.getElementById('admin-form-modal').classList.remove('open'); }
+
+    async function handleSave() {
+      const errEl = document.getElementById('a-err');
+      const fname = document.getElementById('a-fname').value.trim();
+      const lname = document.getElementById('a-lname').value.trim();
+      const email = document.getElementById('a-email').value.trim();
+      const password = document.getElementById('a-password').value;
+      const editId = document.getElementById('a-id').value;
+
+      if (!fname || !lname || !email) {
+        errEl.textContent = 'First name, last name, and email are required.';
+        errEl.style.display = 'block'; return;
+      }
+      if (!editId && !password) {
+        errEl.textContent = 'Password is required for new admins.';
+        errEl.style.display = 'block'; return;
+      }
+      errEl.style.display = 'none';
+
+      const adminData = { admin_fname: fname, admin_lname: lname, admin_email: email };
+      if (password) adminData.admin_password = password;
+
+      const btn = document.getElementById('save-admin-btn');
+      btn.disabled = true; btn.textContent = 'Saving...';
+
+      let result;
+      if (editId) {
+        adminData.admin_id = parseInt(editId);
+        result = await updateAdminAccount(adminData);
+      } else {
+        result = await addAdmin(adminData);
+      }
+
+      btn.disabled = false; btn.textContent = 'Save Admin';
+
+      if (result && result.success) {
+        closeModal();
+        await renderTable();
+        showToast(editId ? 'Admin updated!' : 'Admin added!');
+      } else {
+        errEl.textContent = result?.message || 'Failed to save. Please try again.';
+        errEl.style.display = 'block';
+      }
+    }
+
+    async function handleDelete(id) {
+      if (!confirm('Delete this admin account? This cannot be undone.')) return;
+      const result = await deleteAdmin(id);
+      if (result && result.success) {
+        await renderTable();
+        showToast('Admin deleted.');
+      } else {
+        showToast(result?.message || 'Failed to delete admin.');
+      }
+    }
+  </script>
+</body>
+
+</html>

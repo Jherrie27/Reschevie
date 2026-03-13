@@ -88,38 +88,23 @@ if ($action === 'login') {
     $admin = $stmt2->get_result()->fetch_assoc();
     $stmt2->close();
 
-        // Debug output for admin login
-        if ($admin) {
-            error_log("ADMIN LOGIN DEBUG: email=$email, dbpass=" . $admin['admin_password'] . ", inputpass=$password");
-            if ($password === $admin['admin_password']) {
-                error_log("ADMIN LOGIN MATCH: plain text password matched");
-            } else if (password_verify($password, $admin['admin_password'])) {
-                error_log("ADMIN LOGIN MATCH: hashed password matched");
-            } else {
-                error_log("ADMIN LOGIN FAIL: password did not match");
-            }
-        }
+    if ($admin && ($password === $admin['admin_password'] || password_verify($password, $admin['admin_password']))) {
+        session_regenerate_id(true);
 
-    if ($admin && password_verify($password, $admin['admin_password'])) {
-        // Allow both plain text and hashed passwords for admins
-        if ($password === $admin['admin_password'] || password_verify($password, $admin['admin_password'])) {
-            session_regenerate_id(true);
+        $_SESSION['user'] = [
+            'id'    => $admin['admin_id'],
+            'fname' => $admin['admin_fname'],
+            'lname' => $admin['admin_lname'] ?? '',
+            'email' => $admin['admin_email'],
+            'role'  => 'admin'
+        ];
 
-            $_SESSION['user'] = [
-                'id'    => $admin['admin_id'],
-                'fname' => $admin['admin_fname'],
-                'lname' => $admin['admin_lname'] ?? '',
-                'email' => $admin['admin_email'],
-                'role'  => 'admin'
-            ];
-
-            echo json_encode([
-                'success' => true,
-                'role'    => 'admin',
-                'fname'   => $admin['admin_fname']
-            ]);
-            exit;
-        }
+        echo json_encode([
+            'success' => true,
+            'role'    => 'admin',
+            'fname'   => $admin['admin_fname']
+        ]);
+        exit;
     }
 
     echo json_encode(['success' => false, 'message' => 'Invalid credentials']);

@@ -25,6 +25,7 @@
         <a href="users.html" class="admin-nav-item"><span class="admin-nav-icon">👤</span> Users</a>
         <a href="stories.html" class="admin-nav-item"><span class="admin-nav-icon">💬</span> Client Stories</a>
         <a href="newsletters.html" class="admin-nav-item"><span class="admin-nav-icon">✉️</span> Newsletters</a>
+        <a href="admins.html" class="admin-nav-item"><span class="admin-nav-icon">🔑</span> Admins</a>
         <div style="height:1px; background:rgba(197,160,112,0.1); margin:16px 0;"></div>
         <a href="../index.html" class="admin-nav-item"><span class="admin-nav-icon">🌐</span> View Site</a>
         <a href="#" class="admin-nav-item" id="logout-btn"><span class="admin-nav-icon">🚪</span> Sign Out</a>
@@ -140,8 +141,32 @@
           </select>
         </div>
       </div>
+      <div id="p-image-wrap" class="form-group">
+        <label class="form-label">Product Image (optional)</label>
+        <input type="file" id="p-image" class="form-input" accept="image/jpeg,image/png,image/webp">
+      </div>
       <div id="form-err" class="form-error" style="display:none;margin-bottom:12px;"></div>
       <button class="btn-gold" style="width:100%; margin-top:8px;" id="save-product-btn">Save Product</button>
+    </div>
+  </div>
+
+  <!-- Image Management Modal -->
+  <div class="admin-modal-overlay" id="images-modal">
+    <div class="admin-modal" style="max-width:600px;">
+      <button class="modal-close" id="images-modal-close">✕</button>
+      <h2>Product Images</h2>
+      <div id="images-list" style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:20px;min-height:60px;"></div>
+      <div style="border-top:1px solid rgba(197,160,112,0.15);padding-top:16px;">
+        <label class="form-label">Upload New Image</label>
+        <input type="file" id="img-file" class="form-input" accept="image/jpeg,image/png,image/webp" style="margin-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <label style="font-size:12px;color:var(--gray-light);display:flex;align-items:center;gap:6px;">
+            <input type="checkbox" id="img-primary"> Set as primary image
+          </label>
+        </div>
+        <div id="img-err" class="form-error" style="display:none;margin-bottom:8px;"></div>
+        <button class="btn-gold" id="upload-img-btn" style="width:100%;">Upload Image</button>
+      </div>
     </div>
   </div>
 
@@ -189,6 +214,7 @@
         <td><span class="badge-status badge-${p.product_status}">${p.product_status}</span></td>
         <td>
           <button class="action-btn action-edit" onclick="openEditModal(${p.product_id})">Edit</button>
+          <button class="action-btn" onclick="openImagesModal(${p.product_id})" style="margin-left:4px;background:rgba(197,160,112,0.15);color:var(--gold);">Images</button>
           <button class="action-btn action-delete" onclick="handleDeleteProduct(${p.product_id})" style="margin-left:4px;">Delete</button>
         </td>
       </tr>`).join('')
@@ -203,6 +229,8 @@
       document.getElementById('p-origin').value = 'Japan';
       document.getElementById('p-status').value = 'available';
       document.getElementById('p-featured').value = 'false';
+      document.getElementById('p-image').value = '';
+      document.getElementById('p-image-wrap').style.display = '';
       document.getElementById('form-err').style.display = 'none';
       document.getElementById('product-form-modal').classList.add('open');
     }
@@ -223,6 +251,7 @@
       document.getElementById('p-emoji').value = p.product_emoji || '';
       document.getElementById('p-status').value = p.product_status || 'available';
       document.getElementById('p-featured').value = p.product_featured == 1 ? 'true' : 'false';
+      document.getElementById('p-image-wrap').style.display = 'none';
       document.getElementById('form-err').style.display = 'none';
       document.getElementById('product-form-modal').classList.add('open');
     }
@@ -270,6 +299,17 @@
       btn.textContent = 'Save Product';
 
       if (result && result.success) {
+        // Auto-upload image if one was selected (add mode only)
+        if (!editId) {
+          const imgFile = document.getElementById('p-image').files[0];
+          if (imgFile && result.id) {
+            const fd = new FormData();
+            fd.append('product_id', result.id);
+            fd.append('image', imgFile);
+            fd.append('is_primary', '1');
+            await addProductImage(fd);
+          }
+        }
         closeModal();
         await renderTable();
         showToast(editId ? 'Product updated!' : 'Product added!');
@@ -287,6 +327,85 @@
         showToast('Product deleted.');
       } else {
         showToast(result?.message || 'Failed to delete product.');
+      }
+    }
+
+    // ── Image Management ──────────────────────────────────────
+    let _currentImageProductId = null;
+
+    document.getElementById('images-modal-close').addEventListener('click', () => {
+      document.getElementById('images-modal').classList.remove('open');
+    });
+    document.getElementById('images-modal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('images-modal')) document.getElementById('images-modal').classList.remove('open');
+    });
+    document.getElementById('upload-img-btn').addEventListener('click', handleUploadImage);
+
+    async function openImagesModal(productId) {
+      _currentImageProductId = productId;
+      document.getElementById('img-file').value = '';
+      document.getElementById('img-primary').checked = false;
+      document.getElementById('img-err').style.display = 'none';
+      document.getElementById('images-modal').classList.add('open');
+      await refreshImagesList(productId);
+    }
+
+    async function refreshImagesList(productId) {
+      const listEl = document.getElementById('images-list');
+      listEl.innerHTML = '<span style="color:var(--gray-light);font-size:13px;">Loading...</span>';
+      const images = await getProductImages(productId);
+      if (!images.length) {
+        listEl.innerHTML = '<span style="color:var(--gray-light);font-size:13px;">No images yet.</span>';
+        return;
+      }
+      listEl.innerHTML = images.map(img => {
+        const encoded = img.p_image_url.split('/').map(s => encodeURIComponent(s)).join('/');
+        return `<div style="position:relative;width:120px;">
+          <img src="${_API_BASE}/${encoded}" alt="product" style="width:120px;height:90px;object-fit:cover;border-radius:8px;border:1px solid rgba(197,160,112,${img.is_primary ? '0.7' : '0.2'});">
+          ${img.is_primary ? '<span style="position:absolute;top:4px;left:4px;background:var(--gold);color:#000;font-size:9px;padding:2px 5px;border-radius:3px;">PRIMARY</span>' : ''}
+          <button onclick="handleDeleteImage(${img.p_image_id})" style="position:absolute;top:4px;right:4px;background:rgba(160,0,0,0.8);border:none;color:#fff;border-radius:3px;cursor:pointer;padding:2px 5px;font-size:10px;">✕</button>
+        </div>`;
+      }).join('');
+    }
+
+    async function handleUploadImage() {
+      const errEl = document.getElementById('img-err');
+      const file = document.getElementById('img-file').files[0];
+      if (!file) { errEl.textContent = 'Please select an image file.'; errEl.style.display = 'block'; return; }
+      errEl.style.display = 'none';
+
+      const btn = document.getElementById('upload-img-btn');
+      btn.disabled = true; btn.textContent = 'Uploading...';
+
+      const fd = new FormData();
+      fd.append('product_id', _currentImageProductId);
+      fd.append('image', file);
+      fd.append('is_primary', document.getElementById('img-primary').checked ? '1' : '0');
+
+      const result = await addProductImage(fd);
+      btn.disabled = false; btn.textContent = 'Upload Image';
+
+      if (result && result.success) {
+        document.getElementById('img-file').value = '';
+        document.getElementById('img-primary').checked = false;
+        await refreshImagesList(_currentImageProductId);
+        showToast('Image uploaded!');
+        await renderTable();
+      } else {
+        errEl.textContent = result?.message || 'Upload failed.';
+        errEl.style.display = 'block';
+      }
+    }
+
+    async function handleDeleteImage(imageId) {
+      if (!confirm('Remove this image?')) return;
+      const result = await deleteProductImage(imageId);
+      if (result && result.success) {
+        await refreshImagesList(_currentImageProductId);
+        await renderTable();
+        showToast('Image removed.');
+      } else {
+        showToast(result?.message || 'Failed to remove image.');
       }
     }
   </script>

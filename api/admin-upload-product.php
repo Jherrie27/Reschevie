@@ -53,7 +53,7 @@ if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
 }
 
 $stmt = $conn->prepare("INSERT INTO products (product_name, product_type, product_origin, product_materials, product_karat, product_weight, product_price, product_status, product_emoji) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-$stmt->bind_param("ssssssdds", $name, $type, $origin, $materials, $karat, $weight, $price, $status, $emoji);
+$stmt->bind_param("ssssssdss", $name, $type, $origin, $materials, $karat, $weight, $price, $status, $emoji);
 if ($stmt->execute()) {
     $product_id = $conn->insert_id;
     $stmt->close();
